@@ -1,0 +1,5 @@
+Order deny,allow
+ExpiresActive on
+ExpiresDefault M604800
+
+ErrorDocument 404 /404.html
