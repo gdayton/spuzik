@@ -1,0 +1,11 @@
+Array
+(
+    [name] => 1275653000.jpg
+    [size] => 132076
+    [type] => image/jpeg
+    [url] => http://54.243.129.126/new/files/1275653000.jpg
+    [mediumUrl] => http://54.243.129.126/new/files/medium/1275653000.jpg
+    [thumbnailUrl] => http://54.243.129.126/new/files/thumbnail/1275653000.jpg
+    [deleteUrl] => http://54.243.129.126/new/?file=1275653000.jpg
+    [deleteType] => DELETE
+)

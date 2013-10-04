@@ -1,0 +1,5 @@
+stdClass Object
+(
+    [ImageId] => 8821732995
+    [Description] => Some math problems.
+)

@@ -1,0 +1,452 @@
+<html>
+	<head>
+		<title>Spuzik</title>
+		<link rel="shortcut icon" href="/data/img/spuzik_icon.ico" type="image/x-icon" />
+		<link rel="stylesheet" type="text/css" href="data/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="data/css/css/bootstrap-glyphicons.css" />
+		<link rel="stylesheet" type="text/css" href="main2.css" />
+	</head>
+	<body>
+		<script id="feedTemplate" type="text/template">
+			<div class="info">
+				<span class="glyphicon glyphicon-remove remove-feed-item"></span>
+				<span class="glyphicon glyphicon-flag flag-feed-item"></span>
+				<img class="img-rounded" src="<%= profile_pic %>" />
+				<a href="#"><%= name %></a>
+			</div>
+			<div class="content">
+				<%= content %>
+			</div>
+			<div class="actions">
+				<table border='0' cellpadding='0' cellspacing='0' width='100%;'>
+					<tr>
+						<td valign="top">
+							<textarea class="form-control comment-enter" rows="3" placeholder="Make a comment..." style="display:none;"></textarea>
+							<div class="expand-comments">
+								<span class="glyphicon glyphicon-eye-open"></span> <%= comment_amount %> Comments
+							</div>
+							<div class="comments"></div>
+						</td>
+						<td valign="top" width="100px;">
+							<div class="comment-controls">
+								<span class="date"><%= date %></span><br />
+								<table border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="100%;"><button type="button" class="btn btn-mini custom-yellow" style="width:95%;"><img src="http://i.imm.io/14rOO.png" /><span class="clap-amount"><%= claps %></span></button></td>
+										<td width="30px;"><button type="button" class="btn btn-mini custom-yellow"><span class="glyphicon glyphicon-comment comment-toggle" style="color:blue;"></span></td>
+									</tr>
+								</table>
+								<!--<button type="button" class="btn btn-mini btn-primary post-comment">Comment</button>-->
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</script>
+
+		<script id="commentTemplate" type="text/template">
+			<div class="comment">
+				<a href="#"><%= name %></a> <%= comment %>
+			</div>
+		</script>
+
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+		<script src="/data/bootstrap/js/bootstrap.min.js"></script>
+		<script src="http://underscorejs.org/underscore-min.js"></script>
+		<script src="http://documentcloud.github.io/backbone/backbone-min.js"></script>
+		<script src="main.js"></script>
+		<script src="data/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="http://malsup.github.com/jquery.cycle.all.js"></script>
+		<script src="http://blog.guilhemmarty.com/flippy/jquery.flippy.min.js"></script>
+
+		<div id="header">
+			<div class="inner-header">
+				<table border="0" cellpadding="0" cellspacing="0" width="100%;" style="height:63px;">
+					<tr>
+						<td width="256px;">
+							<img src="http://i.imm.io/1flQs.png" style="height:63px; margin-bottom:9px;"/>
+						</td>
+						<td>
+							<script type="text/javascript">
+							//alert("Planned to do when I get back:\n-Make the search bar bigger.\n-Put the rest of the music player in.\n-Change recomendations to suggestions.\n-Change jukebox to my tunes.\n-Add express yourself in.\n-Design the rest of all the tabs.\n-Consider this bitch done.");
+							$(document).ready(function(){
+								$(".header-functions .right").hover(function(){
+									$(".header-functions .left").css("width","50px");
+									$(".header-functions .right .show-expanded").fadeIn("fast");
+								}, function(){
+									$(".header-functions .left").css("width","");
+									$(".header-functions .right .show-expanded").hide();
+								});
+
+								$(".header-functions .left").hover(function(){
+									$(".header-functions .right").css("width","50px");
+									$(".header-functions .left .show-expanded").fadeIn("fast");
+								}, function(){
+									$(".header-functions .right").css("width","");
+									$(".header-functions .left .show-expanded").hide();
+								});
+
+								$(".lineup-item").mouseenter(function(){
+									var img_url = $(this).attr("data-img");
+									$(this).css("background-image","url('"+img_url+"')");
+								}).mouseleave(function(){
+									$(this).css("background-image","");
+								});
+
+								$(".user-login, .user-menu-big").click(function(){
+									$(".user-menu").toggle();
+								});
+							});
+							</script>
+							<table class="header-functions" border="0" cellpadding="0" cellspacing="0" width="100%;">
+								<tr>
+									<td align="right" class="left">
+										<span class="glyphicon glyphicon-search" style="float:right;"></span>
+										<div class="show-expanded">
+											<input type="text" class="form-control search-bar" placeholder="Search for some shit..." />
+										</div>
+									</td>
+									<td width="1px;" valign="center">
+										<div class="seperate"></div>
+									</td>
+									<td align="left" class="right" valign="center">
+										<div class="show-expanded">
+											<div class="music-player">
+												<table border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>
+															<span class="glyphicon glyphicon-play play-button"></span>
+														</td>
+														<td>
+															<span class="song-name">Smooth Operator</span><br />
+															<span class="artist-name">Sade</span>
+														</td>
+														<td>
+															<!--<img src="http://images.coolchaser.com/themes/t/1039374-i36.photobucket.com-albums-e5-hannahbanana105-equalizer.gif" />-->
+														</td>
+													</tr>
+												</table>
+											</div>
+										</div>
+										<span class="glyphicon glyphicon-music" style="float:left; clear:left;"></span>
+									</td>
+								</tr>
+							</table>
+						</td>
+						<td width="50px;">
+							<div class="user-login">
+								<table class="userfloater activate-user-menu" border="0" cellpadding="0" cellspacing="0" width="30px;">
+									<tr>
+										<td align="center"><span class="glyphicon glyphicon-user usericon"></span></td>
+									</tr>
+								</table>
+								<div class="user-menu-big">
+									<div class="user-menu activate-user-menu">
+										<div class="arrow-up-top"></div>
+										<ul>
+											<li><span class="glyphicon glyphicon-cog"></span> Settings</li>
+											<li><span class="glyphicon glyphicon-"></span> Sign Out</li>
+										</ul>
+									</div>
+								</div>
+								<!--<img class="img-rounded" src="https://mail.google.com/mail/c/u/1/photos/private/AIbEiAIAAAAiCOD_z5Ccp86n6wEQ2ZLlmanSzIgSGPyvuquwrZW7nAEwAS9QkF_RTYZdRhN7xqFHSga0VzWv?sz=64" />-->
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+		<div id="main">
+			<div class="row">
+				<div class="col-lg-3 whiter">
+					<div id="profile">
+						<img src="http://i42.tinypic.com/2v7tlif.png" />
+						<!-- -->
+						<!-- http://i42.tinypic.com/2v7tlif.png -->
+						<div class="info">
+							<p class="name">Glenn Dayton (Fizzle Do, Fizzle De)</p>
+							<span class="live">San Diego, CA</span>
+						</div>
+					</div>
+					<div class="lineup">
+						<div class="lineup-item" data-img="http://www.chromedreams.co.uk/ekmps/shops/chromedreams/images/led-zeppelin-the-document-551-p.jpg">
+							<div class="lineup-item-align">
+								<span class="order-number">1</span><span class="lineup-text">Led Zeppelin</span>
+							</div>
+						</div>
+						<div class="lineup-item" data-img="http://blogs.artinfo.com/objectlessons/files/2012/11/pink-floyd.jpg">
+							<div class="lineup-item-align">
+								<span class="order-number">2</span><span class="lineup-text">Pink Floyd</span>
+							</div>
+						</div>
+						<div class="lineup-item" data-img="http://web-images.chacha.com/brazil-soccer/brazil-soccer-dec-9-2010-200.jpg">
+							<div class="lineup-item-align">
+								<span class="order-number">3</span><span class="lineup-text">Football</span>
+							</div>
+						</div>
+						<div class="lineup-item" data-img="http://www.americanbluesscene.com/wp-content/uploads/2013/05/Rolling-Stones.jpg">
+							<div class="lineup-item-align">
+								<span class="order-number">4</span><span class="lineup-text">The Rolling Stones</span>
+							</div>
+						</div>
+						<div class="lineup-item" data-img="http://3.bp.blogspot.com/-E_U_9ARS50E/UZTK4fV9zLI/AAAAAAAAAU4/vtUk8t37czs/s320/6293WhiteHartLaneStadium_pic1.jpg">
+							<div class="lineup-item-align">
+								<span class="order-number">5</span><span class="lineup-text">White Hart Lane</span>
+							</div>
+						</div>
+						<div class="lineup-item" data-img="https://timfusciardi.files.wordpress.com/2012/06/avb_2722247.jpg">
+							<div class="lineup-item-align">
+								<span class="order-number">6</span><span class="lineup-text">AVB</span>
+							</div>
+						</div>
+						<div class="lineup-item" data-img="http://www.playgolfamarillo.com/wp-content/uploads/2013/02/ball.jpg">
+							<div class="lineup-item-align">
+								<span class="order-number">7</span><span class="lineup-text">Golf</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-9 whiter">
+					<div id="sli-tab">
+						<table border="0" cellpadding="0" cellspacing="0" width="100%;">
+							<tr>
+								<td>
+									<div class="img-cons">
+										<!--<img src="http://online.wsj.com/media/0827pod10.jpg" style="width:518px; height:324px;"/>-->
+										<!--<table border="0" cellpadding="0" cellspacing="0" width="100%;">
+											<tr>
+												<td> this is it</td>
+												<td>
+													<div class="fans">
+														<span class="header">45 Fans</span>
+														<img class="img-rounded" src="http://qph.is.quoracdn.net/main-thumb-t-13544-50-IEAauurE7jzxauHLu5z1LYVD6pjHORLI.jpeg" />
+														<img class="img-rounded" src="http://www.openideo.com/profiles/meanestindian/photo.thumbnail.jpg" />
+													</div>
+													<span class="supporting">2,345 Supporting</span>
+												</td>
+											</tr>
+											<tr>
+												<td colspan="2">
+													<p class="aboutme_text">My favorite color is red, and my favorite food is anything that is unhealthy. My favorite type of weather is dark overcast. &#9996;</p>
+												</td>
+											</tr>
+										</table>-->
+									</div>
+								</td>
+								<td valign="top" width="30%;">
+									<div class="navigation">
+										<ul>
+											<li><div class="arrow-left"></div><span class="glyphicon glyphicon-user"></span> Me</li>
+											<li><span class="glyphicon glyphicon-picture"></span> Media</li>
+											<li><span class="glyphicon glyphicon-music"></span> Jukebox</li>
+											<li><span class="glyphicon glyphicon-list"></span> Links</li>
+											<li><span class="glyphicon glyphicon-comment"></span> Live <span class="glyphicon glyphicon-exclamation-sign app-alert"></span></li>
+											<li><span class="glyphicon glyphicon-fullscreen"></span> Zone Out</li>
+										</ul>
+									</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<div class="feed-head-top">
+						<ul>
+							<li><span class="glyphicon glyphicon-bullhorn"></span> Sports</li>
+							<li><span class="glyphicon glyphicon-music"></span> Music</li>
+							<li><span class="glyphicon glyphicon-random"></span> Recommendations</li>
+						</ul>
+						<div class="feed-ind">
+							<div class="arrow-up" style="margin-left:6px;"></div>
+						</div>
+					</div>
+					<div id="feed-area">
+						<div id="feed">
+							<div class="info">
+								<span class="glyphicon glyphicon-remove remove-feed-item"></span>
+								<span class="glyphicon glyphicon-flag flag-feed-item"></span>
+								<img class="img-rounded" src="http://54.243.129.126/usr_content/pics/514bd1c5ba8c6_t.jpg" />
+								<a href="#">Jake Cohen</a>
+							</div>
+							<div class="content">
+								I'm sure this will be the permanent change for the website!
+								<img src="http://static6.businessinsider.com/image/51dd75f46bb3f78410000000/7-fascinating-facts-about-boobs-in-sports-from-the-espn-article-everyone-is-freaking-out-about.jpg" />
+							</div>
+							<div class="actions">
+								<table border='0' cellpadding='0' cellspacing='0' width='100%;'>
+									<tr>
+										<td valign="top">
+											<textarea class="form-control comment-enter" rows="3" placeholder="Make a comment..." style="display:none;"></textarea>
+											<div class="expand-comments">
+												<span class="glyphicon glyphicon-eye-open"></span> 3 Comments
+											</div>
+											<div class="comments"></div>
+										</td>
+										<td valign="top" width="100px;">
+											<div class="comment-controls">
+												<span class="date">3 days ago</span><br />
+												<table border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%;"><button type="button" class="btn btn-mini custom-yellow" style="width:95%;"><img src="http://i.imm.io/14rOO.png" /><span class="clap-amount">5</span></button></td>
+														<td width="30px;"><button type="button" class="btn btn-mini custom-yellow"><span class="glyphicon glyphicon-comment comment-toggle" style="color:blue;"></span></td>
+													</tr>
+												</table>
+												<!--<button type="button" class="btn btn-mini btn-primary post-comment">Comment</button>-->
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<div id="feed">
+							<div class="info">
+								<span class="glyphicon glyphicon-remove remove-feed-item"></span>
+								<span class="glyphicon glyphicon-flag flag-feed-item"></span>
+								<img class="img-rounded" src="http://54.243.129.126/usr_content/pics/514bd1c5ba8c6_t.jpg" />
+								<a href="#">Jake Cohen</a>
+							</div>
+							<div class="content">
+								I'm sure this will be the permanent change for the website!
+								<img src="" />
+							</div>
+							<div class="actions">
+								<table border='0' cellpadding='0' cellspacing='0' width='100%;'>
+									<tr>
+										<td valign="top">
+											<textarea class="form-control comment-enter" rows="3" placeholder="Make a comment..." style="display:none;"></textarea>
+											<div class="expand-comments">
+												<span class="glyphicon glyphicon-eye-open"></span> 3 Comments
+											</div>
+											<div class="comments"></div>
+										</td>
+										<td valign="top" width="100px;">
+											<div class="comment-controls">
+												<span class="date">3 days ago</span><br />
+												<table border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%;"><button type="button" class="btn btn-mini custom-yellow" style="width:95%;"><img src="http://i.imm.io/14rOO.png" /><span class="clap-amount">5</span></button></td>
+														<td width="30px;"><button type="button" class="btn btn-mini custom-yellow"><span class="glyphicon glyphicon-comment comment-toggle" style="color:blue;"></span></td>
+													</tr>
+												</table>
+												<!--<button type="button" class="btn btn-mini btn-primary post-comment">Comment</button>-->
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<div id="feed">
+							<div class="info">
+								<span class="glyphicon glyphicon-remove remove-feed-item"></span>
+								<span class="glyphicon glyphicon-flag flag-feed-item"></span>
+								<img class="img-rounded" src="http://54.243.129.126/usr_content/pics/514bd1c5ba8c6_t.jpg" />
+								<a href="#">Jake Cohen</a>
+							</div>
+							<div class="content">
+								I'm sure this will be the permanent change for the website!
+							</div>
+							<div class="actions">
+								<table border='0' cellpadding='0' cellspacing='0' width='100%;'>
+									<tr>
+										<td valign="top">
+											<textarea class="form-control comment-enter" rows="3" placeholder="Make a comment..." style="display:none;"></textarea>
+											<div class="expand-comments">
+												<span class="glyphicon glyphicon-eye-open"></span> 3 Comments
+											</div>
+											<div class="comments"></div>
+										</td>
+										<td valign="top" width="100px;">
+											<div class="comment-controls">
+												<span class="date">3 days ago</span><br />
+												<table border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%;"><button type="button" class="btn btn-mini custom-yellow" style="width:95%;"><img src="http://i.imm.io/14rOO.png" /><span class="clap-amount">5</span></button></td>
+														<td width="30px;"><button type="button" class="btn btn-mini custom-yellow"><span class="glyphicon glyphicon-comment comment-toggle" style="color:blue;"></span></td>
+													</tr>
+												</table>
+												<!--<button type="button" class="btn btn-mini btn-primary post-comment">Comment</button>-->
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<div id="feed">
+							<div class="info">
+								<span class="glyphicon glyphicon-remove remove-feed-item"></span>
+								<span class="glyphicon glyphicon-flag flag-feed-item"></span>
+								<img class="img-rounded" src="http://54.243.129.126/usr_content/pics/514bd1c5ba8c6_t.jpg" />
+								<a href="#">Jake Cohen</a>
+							</div>
+							<div class="content">
+								I'm sure this will be the permanent change for the website!
+							</div>
+							<div class="actions">
+								<table border='0' cellpadding='0' cellspacing='0' width='100%;'>
+									<tr>
+										<td valign="top">
+											<textarea class="form-control comment-enter" rows="3" placeholder="Make a comment..." style="display:none;"></textarea>
+											<div class="expand-comments">
+												<span class="glyphicon glyphicon-eye-open"></span> 3 Comments
+											</div>
+											<div class="comments"></div>
+										</td>
+										<td valign="top" width="100px;">
+											<div class="comment-controls">
+												<span class="date">3 days ago</span><br />
+												<table border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%;"><button type="button" class="btn btn-mini custom-yellow" style="width:95%;"><img src="http://i.imm.io/14rOO.png" /><span class="clap-amount">5</span></button></td>
+														<td width="30px;"><button type="button" class="btn btn-mini custom-yellow"><span class="glyphicon glyphicon-comment comment-toggle" style="color:blue;"></span></td>
+													</tr>
+												</table>
+												<!--<button type="button" class="btn btn-mini btn-primary post-comment">Comment</button>-->
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						<div id="feed">
+							<div class="info">
+								<span class="glyphicon glyphicon-remove remove-feed-item"></span>
+								<span class="glyphicon glyphicon-flag flag-feed-item"></span>
+								<img class="img-rounded" src="http://54.243.129.126/usr_content/pics/514bd1c5ba8c6_t.jpg" />
+								<a href="#">Jake Cohen</a>
+							</div>
+							<div class="content">
+								I'm sure this will be the permanent change for the website!
+								<img src="http://sports.pppst.com/banner_sports.gif" />
+							</div>
+							<div class="actions">
+								<table border='0' cellpadding='0' cellspacing='0' width='100%;'>
+									<tr>
+										<td valign="top">
+											<textarea class="form-control comment-enter" rows="3" placeholder="Make a comment..." style="display:none;"></textarea>
+											<div class="expand-comments">
+												<span class="glyphicon glyphicon-eye-open"></span> 3 Comments
+											</div>
+											<div class="comments"></div>
+										</td>
+										<td valign="top" width="100px;">
+											<div class="comment-controls">
+												<span class="date">3 days ago</span><br />
+												<table border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td width="100%;"><button type="button" class="btn btn-mini custom-yellow" style="width:95%;"><img src="http://i.imm.io/14rOO.png" /><span class="clap-amount">5</span></button></td>
+														<td width="30px;"><button type="button" class="btn btn-mini custom-yellow"><span class="glyphicon glyphicon-comment comment-toggle" style="color:blue;"></span></td>
+													</tr>
+												</table>
+												<!--<button type="button" class="btn btn-mini btn-primary post-comment">Comment</button>-->
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
