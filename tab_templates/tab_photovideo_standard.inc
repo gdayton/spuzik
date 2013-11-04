@@ -376,6 +376,38 @@ function grabComments(resource_id){
   });
 }
 
+function getURLPhoto2(){
+	$.ajax({
+		url: "uploadifive.php?url="+$(".photo-url-ptab").val(),
+		success: function(data){
+			var parseJSON = $.parseJSON(data);
+			if(parseJSON.status != "error"){
+				if(parseJSON.data != undefined){
+					$(".photo-url-ptab").val("");
+					$.ajax({
+						url: "actions.php?type=getPhotos&uid="+user_id,
+						success: function(data){
+							var parseJSON = $.parseJSON(data);
+							if(parseJSON.status != "error"){
+								if(parseJSON.data != undefined){
+									for(var i = 0;i < parseJSON.data.length;i++){
+										$(".photos-holder").append("<a href='javascript:launchModal(0,\""+parseJSON.data[i]+"\");'><img style='margin:2px; margin-top:5px;' src='/usr_content/pics/"+parseJSON.data[i]+"_t.jpg' width='155px;' height='155px;' /></a>");
+									}
+									$(".photo-ctr").html(parseJSON.data.length);
+								}
+							}else{
+								alert("There was an error obtaining your photos.");
+							}
+						}
+				 	});
+				}
+			}else{
+				alert("There was an error posting your photo from the given URL.");
+			}
+		}
+  });
+}
+
 </script>
 <style>
 .edit-res{
@@ -383,25 +415,28 @@ function grabComments(resource_id){
 	text-align:center;
 	width:100%;
 }.edit-res-wrap{
-	background-color:black; /* #fc5a1e */
+	background-color:white; /* #fc5a1e */
 	padding-top:10px;
 	padding-bottom:10px;
 }
 </style>
 	<div class="edit-res-wrap">
 		<div class="edit-res">
-			<button class="btn btn-primary btn-small btncustom" style="color:black;" onclick="javascript:managePhotos();"><span style="color:#156ed4;">Manage Photos</span></button>
-			<button class="btn btn-primary btn-small btncustom" style="color:black;" onclick="javascript:manageVideos();"><span style="color:#156ed4;">Manage Videos</span></button>
-			<button class="btn btn-primary btn-small btncustom" style="color:black;" onclick="javascript:manageAlbums();"><span style="color:#156ed4;">Manage Albums</span></button>
+			<button class="btn btn-primary btn-small btncustom" style="color:black; background-color:yellow;" onclick="javascript:managePhotos();"><span style="color:#156ed4;">Manage Photos</span></button>
+			<button class="btn btn-primary btn-small btncustom" style="color:black; background-color:yellow;" onclick="javascript:manageVideos();"><span style="color:#156ed4;">Manage Videos</span></button>
+			<button class="btn btn-primary btn-small btncustom" style="color:black; background-color:yellow;" onclick="javascript:manageAlbums();"><span style="color:#156ed4;">Manage Albums</span></button>
 		</div>
 
 		<form class="manage-photos" style="display:none; margin:10px;">
 			<div id="queue"></div>
 			<input id="file_upload" name="file_upload" type="file" multiple="true">
+			<br /><span style="color:black;">Upload with Photo URL</span><br />
+			<input type='text' class='photo-url-ptab' placeholder='Photo URL...' style='height:25px; margin-top:5px;' />
+			<button class='btn btn-small btn-primary' style='position:relative; bottom:3px; left:2px;' onclick='getURLPhoto2();'><span style='color:yellow;'>Get photo</span></button>
 		</form>
 
 		<form class="manage-videos" style="display:none; margin:10px;">
-			<input type="text" style="height:25px; position:relative; top:5px;" placeholder="Paste Youtube video ID..." class="youtubeID" />
+			<input type="text" style="height:25px; position:relative; top:5px;" placeholder="Paste Youtube URL..." class="youtubeID" />
 			<button class="btn btn-primary btn-small btncustom" type="button" onclick="javascript:addVideo();"><span style="color:black;">Add Video</span></button><img src="http://i50.tinypic.com/33m6cy1.png" style="margin-left:8px;" />
 			<div class="video-info">
 				<b class="video-name"></b><br />
@@ -609,24 +644,24 @@ function grabComments(resource_id){
 	</div>
 
 <div class="view" style="margin-top:10px;">
-	<div style='border-bottom:1px solid yellow; margin-top:10px;'>
-		<b style='color:yellow;'><i class="icon-th icon-white" style="position:relative; right:3px; bottom:2px; margin-left:5px;"></i>Albums</b>
+	<div style='border-bottom:1px solid black; margin-top:10px;'>
+		<b style='color:black;'><i class="icon-th" style="position:relative; right:3px; bottom:2px; margin-left:5px;"></i>Albums</b>
 	</div>
 	<table border="0" width="100%;">
 		<td align="center">
 			<div class="album-holder"></div>
 		</td>
 	</table>
-	<div style='border-bottom:1px solid yellow;'>
-		<b style='color:yellow;'><i class="icon-picture icon-white" style="position:relative; right:3px; bottom:2px; margin-left:5px;"></i>Photos</b><span style='font-size:13px;'> &middot; <span class='photo-ctr'>0</span> photos</span>
+	<div style='border-bottom:1px solid black;'>
+		<b style='color:black;'><i class="icon-picture" style="position:relative; right:3px; bottom:2px; margin-left:5px;"></i>Photos</b><span style='font-size:13px; color:black;'> &middot; <span class='photo-ctr'>0</span> photos</span>
 	</div>
 	<table border="0" width="100%;">
 		<td align="center">
 			<div class="photos-holder"></div>
 		</td>
 	</table>
-	<div style='border-bottom:1px solid yellow; margin-top:10px;'>
-		<b style='color:yellow;'><i class="icon-film icon-white" style="position:relative; right:3px; bottom:2px; margin-left:5px;"></i>Videos</b><span style='font-size:13px;'> &middot; <span class='video-ctr'>0</span> videos</span>
+	<div style='border-bottom:1px solid black; margin-top:10px;'>
+		<b style='color:black;'><i class="icon-film" style="position:relative; right:3px; bottom:2px; margin-left:5px;"></i>Videos</b><span style='font-size:13px; color:black;'> &middot; <span class='video-ctr'>0</span> videos</span>
 	</div>
 	<table border="0" width="100%;">
 		<td align="center">
@@ -678,7 +713,7 @@ function grabComments(resource_id){
     </style>
     <table border="0" width="100%" height="100%">
     	<tr>
-    		<td style="background-color:black;" align="center" valign="center">
+    		<td style="background-color:white;" align="center" valign="center">
     		<div class="imgvid-content" style='width:100%; height:100%;'></div>
     		<img class="modal-img" style="display:none;" src="" style="height:100%;" img-id=""/>
     		</td>

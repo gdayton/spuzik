@@ -2,16 +2,15 @@
 include("actions/actions.class.php");
 sec_session_start();
 ob_start();
-//phpinfo();
 ?>
 <html>
 	<head>
-		<title>Company #1</title>
+		<title>Spuzik | The Social Network for Sports and Music</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<link rel="stylesheet" type="text/css" href="/data/bootstrap/css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="/data/uploadifive.css" />
 		<link rel="stylesheet" type="text/css" href="/data/main.css" />
-		<link href='http://fonts.googleapis.com/css?family=Nosifer|Merienda|Satisfy|Medula+One|Covered+By+Your+Grace|Molle|Arbutus|Ranchers|Diplomata+SC|Bigelow+Rules|Emblema+One|Faster+One' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Nosifer|Autour+One|Cinzel|Roboto+Condensed|Permanent+Marker|Lily+Script+One|Milonga|Merienda|Satisfy|Medula+One|Covered+By+Your+Grace|Molle|Arbutus|Ranchers|Diplomata+SC|Bigelow+Rules|Emblema+One|Faster+One' rel='stylesheet' type='text/css'>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
 		<script src="/data/bootstrap/js/bootstrap.min.js"></script>
@@ -21,8 +20,11 @@ ob_start();
 		<script src="/data/main.js"></script>
 		<script src="/actions/swfobject.js"></script>
 	  	<script src="/actions/grooveshark.js"></script>
+	  	<script src="/data/waypoints.js"></script>
+	  	<script src="/data/jquery.fineuploader-3.7.0.min.js"></script>
+	  	<link rel="shortcut icon" href="/data/img/spuzik_icon.ico" type="image/x-icon" />
 	</head>
-	</body>
+	<body>
 		<script>
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -100,19 +102,20 @@ ob_start();
 				}
 			}
 
-			var logId = <?php echo $_SESSION['user_id'].";"; ?>
+			var logId = <?php echo ( isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0) .";" ?>
 
-		<?php
-			$u = new User();
-			$userInfo = $u->userInfo($_SESSION['user_id']);
-		?>
+			<?php
+				$u = new User();
+				$userInfo = $u->userInfo($_SESSION['user_id']);
+			?>
+			var profileSongID = <?php echo ( isset($userInfo['profile_music']) ? $userInfo['profile_music'] : 0 ).";"; ?>
 			function loadBackground(pid){
 				if(pid == ""){
 					$(".css-content").html("body{\
-						background-color:#173aff;\
+						background-color:#179bff;\
 						background-position: center center;\
 						background-repeat: no-repeat;\
-						background-color:#173aff;\
+						/*background-color:#173aff;*/\
 						font-family:Helvetica;\
 					}");
 				}else if(pid == "thoughtstream"){
@@ -123,7 +126,7 @@ ob_start();
 						background: -ms-radial-gradient(circle, #2727ff, #0000f3);\
 						background-position: center center;\
 						background-repeat: no-repeat;*/\
-						background-color:black;\
+						background-color:white;\
 						font-family:Helvetica;\
 					}");
 				}else if(pid == "notifications"){
@@ -144,9 +147,17 @@ ob_start();
 						background-color:#173aff;\
 						font-family:Helvetica;\
 					}");
+				}else if(pid == "unite"){
+					$(".css-content").html("body{\
+						background-color:white;\
+					}");
+				}else if(pid == "verif"){
+					$(".css-content").html("body{\
+						background-color:#173aff;\
+					}");
 				}else{
 					$(".css-content").html("body{\
-						background-color:black;\
+						background-color:white;\
 						font-family:Helvetica;\
 					}");
 				}
@@ -164,7 +175,7 @@ ob_start();
 			/*background-position: center center;
 			background-repeat: no-repeat;*/";
 			if($file == "thoughtstream"){
-				echo "background-color:black;";
+				echo "background-color:white;";
 				//echo "background-size:100% 100%;";
 				//echo "background-image:url('http://i39.tinypic.com/nbcgt2.png');";
 			}else if($file == "notifications"){
@@ -174,14 +185,31 @@ ob_start();
 					echo "background-image:url('http://54.243.129.126/usr_content/pics/512061ec972bf_w.jpg');";
 				}
 				echo "background-clip:padding-box;
-				background-size:100%; 100%;";
+				background-repeat:no-repeat;
+				background-size:100% 100%;";
 			}else if($file == ""){
-				echo "background-color:#173aff;";
+				//echo "background-color:#179bff;";
+				//echo "background-image:url('http://i.imm.io/1ea0P.png');";
+				//echo "background-size:100% 100%;";
+				//echo "width:100%;";
+				echo "background-repeat:no-repeat;
+				background-size:100% 100%;";
+				//echo "background-image:url('http://wallpoh.com/wp-content/uploads/2013/03/Skyrim-Wallpaper-1920x1080.jpg');";
+				//echo "background-image:url('http://awesomewallpapers.files.wordpress.com/2010/08/pepsi_ms-desktop-4-0112.jpg');";
+				//echo "background-image:url('http://2.bp.blogspot.com/-Vcftg4BT8jM/TrSohajSD7I/AAAAAAAAHjk/9ix52KPvxKg/s1600/Qualcomm%2BStadium1.jpg');";
+				//echo "background-image:url('http://tnjn.com/content/storyimage/2012/09/06/Screen_Shot_2012-09-06_at_9.40.45_PM.box.png');";
+				echo "background-image:url('http://www.erikvermeulen.com/wp-content/uploads/2012/08/rock-crowd.jpeg');";
+				//echo "background-image:url('http://54.243.129.126/usr_content/pics/5124642f3e532.jpg');";
+				//echo "background-image:url('http://i44.tinypic.com/25un045.jpg');";
 			}else if($file == "main"){
+				echo "background-color:#179bff;";
+			}else if($file == "unite"){
+				echo "background-color:white;";
+			}else if ($file == "verif"){
 				echo "background-color:#173aff;";
 			}else{
-				//echo "background-color:black; /* #0e0eff #156ed4 3B5998 */";
-				echo "background-image:url('http://i39.tinypic.com/nbcgt2.png');";
+				echo "background-color:white; /* #0e0eff #156ed4 3B5998 */";
+				//echo "background-image:url('http://i39.tinypic.com/nbcgt2.png');";
 			}
 
 			echo "font-family:Helvetica;
@@ -266,6 +294,13 @@ ob_start();
 			color:white;
 			font-size:13px;
 			margin-right:3px;
+		}.terms{
+			position:fixed;
+			bottom:0px;
+			right:0px;
+			float:right;
+			z-index:1000;
+			padding:2px;
 		}
 
 		::selection {
@@ -280,7 +315,7 @@ ob_start();
 			TO DO: Build Javascript module to handle transactions with new page URLs.
 		-->
 		<?php
-		if($file == "main" || $file == ""){
+		if($file == "main" || $file == "" || $file == "verif"){
 		}else{
 			include("templates/header_bar.inc");
 		}
@@ -292,8 +327,9 @@ ob_start();
 					if(($file == "main" || $file == "signin" || $file == "forgot_password" || $file == "verif"))
 						include("templates/".$file.".inc");
 					//else redirect user to the homepage.
-					else
+					else{
 						header("Location: /?p=main");
+					}
 				//user is logged in, redirect them to the notifications page.
 				}else{
 					include("templates/".$file.".inc");
@@ -302,12 +338,31 @@ ob_start();
 				echo "File does not exist!";
 		}else{
 			if($u->loginCheck())
-				header("Location: /?p=notifications");
+				header("Location: /?p=profile");
 			include("templates/main.inc");
 		}
 		?>
+		<script>
+		function exposeBugPanel(){
+			$(".bug-report-content").slideToggle();
+		}
+		</script>
 		<div class="bug">
-			<span class="beta">BETA</span><a target="_blank" href="https://docs.google.com/forms/d/17XSZt6U_9lXMpNLaRwV96cG136CLAhUh4JkkX97l6cE/viewform?entry.1686089211=http://&entry.820742360&entry.448320425&entry.691100220&entry.860091091">Report Bug or Critique</a>
+			<!--<span class="beta">BETA</span><a target="_blank" href="https://docs.google.com/forms/d/17XSZt6U_9lXMpNLaRwV96cG136CLAhUh4JkkX97l6cE/viewform?entry.1686089211=http://&entry.820742360&entry.448320425&entry.691100220&entry.860091091">Report Bug or Critique</a>-->
+			<!--<textarea style="width:250px; height:75px;"></textarea>-->
+			<div class="bug-report" style="background-color:white; -moz-border-top-right-radius:5px; -webkit-border-top-right-radius:5px; border-top-right-radius:5px; -moz-border-top-left-radius:5px; -webkit-border-top-left-radius:5px; border-top-left-radius:5px;">
+			<div class="bug-report-content" style="display:none;">
+				<b style="color:black;">Bug or Feedback form</b><br />
+				<textarea style="width:250px;"></textarea>
+				<table border="0" cellpadding="0" cellspacing="0">
+					<tr>
+						<td><label style="font-size:13px; color:black;"><input name="bugtype" id="bugtype" type="radio" style="position:relative; bottom:3px; right:2px;">Bug</label></td>
+						<td style="padding-left:10px;"><label style="font-size:13px; color:black;"><input name="bugtype" id="bugtype" type="radio" style="position:relative; bottom:3px; right:2px;"/>Critique</label></td>
+					</tr>
+				</table>
+				<button class="btn btn-small btn-primary"><span style="color:white;" style="position:relative; bottom:3px; right:2px;">Submit Report</span></button>
+			</div>
+			Bug or Feedback form<i class="icon-chevron-up" style="margin-left:5px; cursor:pointer;" onclick="exposeBugPanel();"></i></div>
 		</div>
 	<body>
 </html>

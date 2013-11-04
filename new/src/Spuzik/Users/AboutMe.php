@@ -59,25 +59,25 @@ class AboutMe{
 						"Age" => array(
 							"Action" => AttributeAction::PUT,
 							"Value" => array(
-								Type::STRING => $Info["Age"]
+								Type::STRING => htmlspecialchars(trim($Info["Age"]))
 							)
 						),
 						"Location" => array(
 							"Action" => AttributeAction::PUT,
 							"Value" => array(
-								Type::STRING => $Info["Location"]
+								Type::STRING => htmlspecialchars(trim($Info["Location"]))
 							)
 						),
 						"Bio" => array(
 							"Action" => AttributeAction::PUT,
 							"Value" => array(
-								Type::STRING => $Info["Bio"]
+								Type::STRING => htmlspecialchars(trim($Info["Bio"]))
 							)
 						),
 						"Nickname" => array(
 							"Action" => AttributeAction::PUT,
 							"Value" => array(
-								Type::STRING => $Info["Nickname"]
+								Type::STRING => htmlspecialchars(trim($Info["Nickname"]))
 							)
 						)
 					)

@@ -94,16 +94,20 @@ if(isset($type)){
 			$u->getLineup($_GET['u_id']);
 			break;
 		case "getPostings":
-			$u->getPostings($_GET['p_id']);
+			header("Content-type: text/json");
+			$u->getPostings($_GET['p_id'], $_GET['ptype']);
 			break;
 		case "grabPosting":
 			$u->grabPosting($_GET['p_id']);
 			break;
 		case "getProfilePostings":
-			$u->getProfilePostings($_GET['u_id'],$_GET['p_id']);
+			$u->getProfilePostings($_GET['u_id'],$_GET['p_id'], $_GET['ptype']);
 			break;
 		case "editProfilePic":
 			$u->editProfilePic($post);
+			break;
+		case "grabLikeUsers":
+			$u->grabLikeUsers();
 			break;
 		case "editHomePic":
 			$u->editHomePic($post);
@@ -188,6 +192,9 @@ if(isset($type)){
 			break;
 		case "grabSports":
 			$u->grabSports();
+			break;
+		case "grabPreferences":
+			$u->grabPreferences();
 			break;
 		case "addClient":
 			$u->addClient($post);
@@ -312,6 +319,15 @@ if(isset($type)){
 		case "getChatUsersUnique":
 			$u->getChatUsersUnique($_GET['c_id']);
 			break;
+		case "addPostingCategory":
+			$u->addPostingCategory($post);
+			break;
+		case "grabPostings":
+			$u->grabPostings($_GET['u_id'],$_GET['view'],$_GET['category'],$_GET['type']);
+			break;
+		case "getProfileSong":
+			$u->getProfileSong();
+			break;
 		case "getChatAlerts":
 			$u->getChatAlerts();
 			break;
@@ -371,6 +387,15 @@ if(isset($type)){
 		//		'useractionid'	=> 17  //get this from the post db
 		//	)/*$post*/);
 		//	break;
+		//array("fname"=>"Test",
+		//							   "lname"=>"Testing",
+		//							   "type"=>"0",
+		//							   "email"=>"gdayton@ucla.edu",
+		//							   "day"=>"1",
+		//							   "month"=>"1",
+		//							   "year"=>"1994",
+		//							   "password"=>"this",
+		//						       "passwordv"=>"this")
 		case "markReadNotification":
 			$u->markReadNotification($_GET['n_id']);
 			break;
@@ -379,6 +404,12 @@ if(isset($type)){
 			break;
 		case "recs":  //TODO make this only return the name, id, photo url, and hometown, not the whole shabang
 			$u->recs();
+			break;
+		case "profileSong":
+			$u->profileSong($post);
+			break;
+		case "getSongsAll":
+			$u->getSongsAll($_GET['s_id']);
 			break;
 		default:
 			$returnJSON = array("status"=>"error","status_type"=>"internal","status_msg"=>"Not a valid function.");

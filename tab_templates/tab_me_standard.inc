@@ -24,12 +24,14 @@
 }.user-info .user-info-table th .bigtext{
 	font-size:25px;
 	color:white;
+}.quotes{
+	margin-left:5px;
 }.quotes li{
 	font-size:13px;
-	color:orange;
+	color:blue;
 }.memory td{
 	font-size:13px;
-	color:white;
+	color:black;
 }.about{
 	font-size:13px;
 	color:white;
@@ -150,7 +152,7 @@ function grabQuotes(){
 			$(".quotes").empty();
 			if(parseJSON.data != undefined){
 				for(var i = 0;i < parseJSON.data.length;i++){
-					$(".quotes").append("<li><span style='color:white;'>"+parseJSON.data[i].quote+" -<i style='color:#ffff27; font-weight:bold;'>"+parseJSON.data[i].auth+"</i></span> <i class='icon-trash icon-white btn-edit-show-hide' onclick='deleteQuote("+parseJSON.data[i].id+")'></i></li>");
+					$(".quotes").append("<li><span style='color:black;'>"+parseJSON.data[i].quote+" -<i style='color:black; font-weight:bold;'>"+parseJSON.data[i].auth+"</i></span> <i class='icon-trash btn-edit-show-hide' onclick='deleteQuote("+parseJSON.data[i].id+")'></i></li>");
 				}
 			}
 		}
@@ -203,8 +205,8 @@ function grabMemories(){
 			if(parseJSON.data != undefined){
 				for(var i = 0;i < parseJSON.data.length;i++){
 					$(".memory tr:last").after("<tr>\
-													<td valign='top'><span style='color:white;'>"+parseJSON.data[i].year+"</span></td>\
-													<td style='color:#ffff27;'>"+parseJSON.data[i].memory+"</td>\
+													<td valign='top'><span style='color:blue; font-weight:bold;'>"+parseJSON.data[i].year+"</span></td>\
+													<td style='color:black;'>"+parseJSON.data[i].memory+"</td>\
 													<td valign='top'><i class='icon-trash icon-white btn-edit-show-hide' onclick='deleteMemory("+parseJSON.data[i].id+");'></i></td>\
 												</tr>");
 				}
@@ -308,46 +310,46 @@ setInterval(function(){
 <div class="user-info">
 	<table border="0" class="user-info-table" cellspacing="5" width="100%;">
 		<tr>
-			<th align="left" valign="middle">Nickname</th>
-			<th align="left" valign="middle">Gender</th>
-			<th align="left" valign="middle">Birthday</th>
-			<th align="left" valign="middle">Hometown</th>
-			<th align="left" valign="middle"><div class="edit" style="float:right;"><button class="btn btn-mini btn-primary" onclick="editInfo();" style="margin-right:5px;"><span style="color:yellow;">Save</span></button><a href="javascript:cancelInfoEdit();" style='color:yellow;'>Cancel</a></div>Email</th>
+			<th align="left" valign="middle" style="color:blue;">Nickname</th>
+			<th align="left" valign="middle" style="color:blue;">Gender</th>
+			<th align="left" valign="middle" style="color:blue;">Birthday</th>
+			<th align="left" valign="middle" style="color:blue;">Hometown</th>
+			<th align="left" valign="middle" style="color:blue;"><div class="edit" style="float:right;"><button class="btn btn-mini btn-primary" onclick="editInfo();" style="margin-right:5px;"><span style="color:yellow;">Save</span></button><a href="javascript:cancelInfoEdit();" style='color:yellow;'>Cancel</a></div>Email</th>
 			<th rowspan="2">
 				<div class="view"><button class="btn btn-small btncustom btn-edit-show-hide" onclick="editInfoDisp();" style='color:#2727ff; font-weight:bold;'><i class="icon-edit"></i>Edit</button></div>
 			</th>
 		</tr>
 		<tr>
 			<td valign="middle">
-				<div class='nickname ex-nickname' style='display:none;' onclick='$(this).hide();'></div>
-				<div class="view n-name n-name2"><span style="color:yellow; font-size:25px; border-bottom:1px solid white;" class="nickname">Big G</span></div>
+				<!--<div class='nickname ex-nickname' style='display:none;' onclick='$(this).hide();'></div>-->
+				<div class="view n-name n-name2"><span style="color:black; font-size:25px; border-bottom:1px solid white;" class="nickname">Big G</span></div>
 				<div class="edit"><input type="text" class="nickname-edit" style="height:25px; font-size:13px; width:100px;"/></div>
 			</td>
 			<td valign="middle">
-				<div class="view gender"></div>
+				<div class="view gender" style="color:black;"></div>
 				<div class="edit">
 					<label style="font-size:13px;"><input type="radio" name="gen" id="gender-edit" value="m" class="gender-edit-male" style="position:relative; bottom:4px;"> Male</label>
 					<label style="font-size:13px; margin-top:-7px;"><input type="radio" name="gen" id="gender-edit" value="f" class="gender-edit-female" style="position:relative; bottom:4px;"> Female</label>
 				</div>
 			</td>
 			<td valign="middle">
-				<div class="view birthday"></div>
+				<div class="view birthday" style="color:black;"></div>
 				<div class="edit"><input class="dob-field popDates birthday-edit" type="text"  placeholder="" style="height:25px; width:95px; font-size:13px;"/></div>
 			</td>
 			<td valign="middle">
-				<div class="view hometown"></div>
+				<div class="view hometown" style="color:black;"></div>
 				<div class="edit"><input type="text" class="hometown-edit" style="height:25px; width:100px; font-size:13px;" /></div>
 			</td>
 			<td valign="middle">
-				<div class="email"></div>
+				<div class="email" style="color:black;"></div>
 				<div class="edit" style="color:#f9b14c;">Email cannot be changed.</div>
 			</td>
 		</tr>
 	</table>
 </div>
-<div class="about" style="border-top:2px dashed white; margin-top:8px;">
+<div class="about" style="border-top:2px dashed black; margin-top:8px;">
 	<!--<div style='background-color:#fc5a1e; border-bottom:3px solid #ff5959; width:100%; position:relative; margin-top:-10px; margin-left:-10px; padding-right:20px; padding-bottom:5px;'><center><span style='font-size:25px; color:black; position:relative; top:5px; font-weight:bold;'>About Me</span></center></div>-->
-	<div class="about-me-text" style='color:yellow; margin-left:5px; line-height:20px; margin-top:8px; /*font-weight:bold;*/ font-family:Lucida Sans Unicode, cursive; font-style:italic;'></div>
+	<div class="about-me-text" style='color:blue; margin-left:5px; line-height:20px; margin-top:8px; text-size:16px;/*font-weight:bold;*/ font-family:Helvetica;'></div>
 	<textarea style="width:100%; height:100%; resize:none; background:none; color:white; display:none;" class="aboutme"></textarea>
 </div>
 <table border="0" width="100%;">
@@ -359,12 +361,12 @@ setInterval(function(){
 	</tr>
 
 	<tr>
-		<td style="border-top:2px dashed white; margin-top:10px; padding-top:10px;"><span style="color:#ffff27; border-bottom:2px solid white;">Favorite Quotes/ Lyrics</span></td>
+		<td style="border-top:2px dashed white; padding-top:10px; padding-bottom:10px;"><span style="color:black; border-bottom:2px solid black;">Favorite Quotes/ Lyrics</span></td>
 	</tr>
 	<!-- QUOTES AREA -->
 	<tr>
 		<td>
-			<ul class="quotes">
+			<ul class="quotes" style="margin-left:15px;">
 				<li><span style="color:white;">Life is hard; it's harder if you're stupid. -<i style="color:yellow;">John Wayne</i></span> <i class="icon-trash icon-white"></i></li>
 				<li><span style="color:white;">When everything is easy one quickly gets stupid. -<i style="color:yellow;">Maxim Gorky</i></span> <i class="icon-trash icon-white"></i></li>
 				<li><span style="color:white;">No matter how long you stare at it, it always looks phenomenal. -<i style="color:yellow;">Ollie Schindler</i></span> <i class="icon-trash icon-white"></i></li>
@@ -377,7 +379,7 @@ setInterval(function(){
 	</tr>
 
 	<tr>
-		<td style="border-top:2px dashed white; margin-top:10px; padding-top:10px;"><span style="color:#ffff27; border-bottom:2px solid white;">Memory Zone</span></td>
+		<td style="border-top:2px dashed white; margin-top:10px; padding-top:10px;"><span style="color:black; border-bottom:2px solid black;">Memory Zone</span></td>
 	</tr>
 	<tr>
 		<td>

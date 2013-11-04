@@ -25,9 +25,9 @@ class User{
 		$data['password'] = $request['password'];
 		$data['passwordv'] = $request['passwordv'];
 		$data['reg_date'] = strtotime("now");
-		$data['aname'] = trim(trim($request['aname']));
-		$data['gender'] = $request['gender'];
-		$data['zip'] = trim($request['zip']);
+		/*$data['aname'] = trim(trim($request['aname']));*/
+		/*$data['gender'] = $request['gender'];
+		$data['zip'] = trim($request['zip']);*/
 
 		foreach($data as $a=>$b){
 			$data[$a] = strip_tags($b);
@@ -87,6 +87,7 @@ class User{
 					$jsonArray['status_itr'] = $jsonArray['status_itr']+array("dob"=>"You must enter a valid DOB.");
 				}
 
+				/*
 				if(empty($data['gender'])){
 					$error++;
 					$jsonArray['status_itr'] = $jsonArray['status_itr']+array("gender"=>"You must enter your gender.");
@@ -98,6 +99,7 @@ class User{
 					$error++;
 					$jsonArray['status_itr'] = $jsonArray['status_itr']+array("zip"=>"You must enter a valid zip code.");
 				}
+				*/
 				break;
 			case 2: //team
 			case 4: //band
@@ -135,8 +137,13 @@ class User{
 						$stmt->bindParam("lname",$data['lname']);
 						$stmt->bindParam("dob",$data['dob']);
 						$stmt->bindParam("u_id",$data['u_id']);
-						$stmt->bindParam("gender",$data['gender']);
-						$stmt->bindParam("zip",$data['zip']);
+						$blankwhite = "";
+						$stmt->bindParam("gender",$blankwhite);
+						$stmt->bindParam("zip",$blankwhite);
+
+						//The below information is requested in subsequent portion.
+						/*$stmt->bindParam("gender",$data['gender']);
+						$stmt->bindParam("zip",$data['zip']);*/
 						$result2 = $stmt->execute();
 						break;
 				case 1: //athelete
@@ -199,7 +206,7 @@ class User{
 
 				$headers  = 'MIME-Version: 1.0' . "\r\n";
 				$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-				$headers .= 'To: '.$data['fname'].' '.$data['lname'].' '.$data['aname'].' <'.$data['email'].'>' . "\r\n";
+				$headers .= 'To: '.$data['fname'].' '.$data['lname'].' <'.$data['email'].'>' . "\r\n";
 				$headers .= 'From: Spuzik Support <support@spuzik.us>' . "\r\n";
 
 				$message = "<h3>Welcome to Spuzik!</h3><p><b>Activate your account</b> Please click on the link below to activate your account.<br />http://54.243.129.126/index.php?p=verif&token=".$verif_token."|".$data['u_id']."</p>";
@@ -436,7 +443,7 @@ class User{
 	*/
 	public function userInfo($u_id){
 		//Always grab this info
-		$query = "SELECT email, type, profile_pic, home_pic, last_on FROM user WHERE id = :u_id";
+		$query = "SELECT email, type, profile_pic, home_pic, last_on, profile_music FROM user WHERE id = :u_id";
 		$stmt = $this->db->prepare($query);
 		$stmt->bindParam("u_id",$u_id);
 		$stmt->execute();
@@ -781,7 +788,9 @@ class User{
 					'useractionid'	=> $info['u2'],   //get this from the post db
 					'postid'		=> $info['u1']	  //this is the follower that did it.
 				);
+				ob_start();
 				$this->makeNotification($params);
+				ob_end_flush();
 			}
 		}else{
 			$json_array = array("status"=>"error","status_msg"=>"You're already a fan.");
@@ -881,6 +890,14 @@ class User{
 			$stmt->bindParam("link",$post['link']);
 			$stmt->bindParam("link_content",$post['link_content']);
 			$res = $stmt->execute();
+
+			$select = "SELECT id FROM link WHERE u_id = :uid ORDER BY id DESC LIMIT 1;";
+			$stmt = $this->db->prepare($select);
+			$stmt->bindParam("uid",$_SESSION['user_id']);
+			$res = $stmt->execute();
+
+			$data = $stmt->fetch(PDO::FETCH_ASSOC);
+			$jsonEncode['data'] = $data['id']; //get the id of the link
 
 			if(!$res){
 				$jsonEncode['status'] = "error";
@@ -1148,7 +1165,20 @@ class User{
 		$stmt->bindParam("r_id",$post['r_id']);
 		$stmt->bindParam("text_add",$post['text_add']);
 		$stmt->bindParam("pt",$post['post_type']);
+		//$stmt->bindParam("c",$post['cat']);  	//category
+		//$stmt->bindParam("cb",$post['cat_b']); 	//category broad
 		$res = $stmt->execute();
+
+		$statement = "SELECT id FROM post WHERE u_id = :uid ORDER BY id DESC LIMIT 1;";
+		$stmt = $this->db->prepare($statement);
+		$stmt->bindParam("uid",$_SESSION['user_id']);
+		$stmt->execute();
+		$stmt->execute();
+
+		$data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		$jsonEncode['data'] = $data['id'];
+
 		if(!$res){
 			$jsonEncode['status'] = "error";
 			$jsonEncode['status_msg'] = "Posting could not be made.".$stmt->errorInfo[0]." ".$stmt->errorInfo[1];
@@ -1157,7 +1187,109 @@ class User{
 		echo json_encode($jsonEncode);
 	}
 
-	public function getPostings($rid,$startLimit = 0){
+	public function grabLikeUsers(){
+		$jsonEncode = array("status"=>"success");
+
+		$select = "SELECT type, preference FROM preferences WHERE u_id = :uid;";
+		$stmt = $this->db->prepare($select);
+		$stmt->bindParam("uid",$_SESSION['user_id']);
+		$stmt->execute();
+
+		if($stmt){ //now you have all the desires that you like
+			$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+			$userIDs = array();
+			$userIDsMore = array();
+
+
+			foreach($data as $d){
+				$select2 = "SELECT u_id, type, preference FROM preferences WHERE type = :t AND preference = :p AND u_id != :uid;";
+				$stmt2 = $this->db->prepare($select2);
+				$stmt2->bindParam("t",$d['type']);
+				$stmt2->bindParam("p",$d['preference']);
+				$stmt2->bindParam("uid",$_SESSION['user_id']);
+				$stmt2->execute();
+
+				$data2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
+				if($data2 != null){
+					foreach($data2 as $d2){
+						if(!in_array($d2['u_id'],$userIDs)){
+							array_push($userIDsMore,$d2);
+							array_push($userIDs,$d2['u_id']);
+						}
+					}
+				}
+			}
+
+			$finalArray = array();
+
+			foreach($userIDsMore as $uidm){
+				$user_info = $this->userInfo($uidm['u_id']);
+				if($uidm['type'] == 0){ //sport
+					$select = "SELECT sport AS name FROM sport WHERE id = :i;";
+				}else{
+					$select = "SELECT genre AS name FROM genre WHERE id = :i;";
+				}
+				$stmt = $this->db->prepare($select);
+				$stmt->bindParam("i",$uidm['preference']);
+				$stmt->execute();
+
+				$data3 = $stmt->fetch(PDO::FETCH_ASSOC);
+
+				$select = "SELECT profile_music FROM user WHERE id = :uid;";
+				$stmt = $this->db->prepare($select);
+				$stmt->bindParam("uid",$uidm['u_id']);
+				$stmt->execute();
+
+				$data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+				if($stmt){
+					$select = "SELECT * FROM tune WHERE id = :i;";
+					$stmt = $this->db->prepare($select);
+					$stmt->bindParam("i",$data['profile_music']);
+					$stmt->execute();
+
+					$data2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+					array_push($userIDsMore,$data2);
+				}
+
+				$finalArraySmall = array($user_info, $data3['name'], $data2);
+				array_push($finalArray, $finalArraySmall);
+			}
+
+			$jsonEncode['data'] = $finalArray;
+		}
+
+		echo json_encode($jsonEncode);
+	}
+
+	public function grabPostings($userID, $view, $category, $type){
+		$jsonEncode = array("status"=>"success");
+
+		$select = "SELECT * FROM post WHERE u_id = :userID, type = :type, category = :category, post_type = :post_type;";
+		$stmt = $this->db->prepare($select);
+
+		$stmt->bindParam("userID",$userID);
+		$typeArray = array("image"=>1,"video"=>2,"link"=>3,"all"=>4);
+		$stmt->bindParam("type",$typeArray[$type+1]); //needs filtering
+		$categoryArray = array("sports"=>0,"genre"=>1,"suggestions"=>2,"both"=>3);
+		$stmt->bindParam("category",$categoryArray[$category]);
+		$stmt->bindParam("post_type",$view);
+		$res = $stmt->execute();
+
+		if($res){
+			$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		}else{
+			$jsonEncode['status'] = "error";
+			$jsonEncode['status_msg'] = "There was an error with retreiving your postings.";
+		}
+
+		echo json_encode($jsonEncode);
+	}
+
+	public function getPostings($rid,$ptype,$startLimit = 0){
 		/*
 			Account for multiple pages to be loaded by this function. And also take into account
 			the fans that you are going to see their postings for.
@@ -1167,21 +1299,16 @@ class User{
 		//$stmt = $this->db->prepare("SELECT COUNT(id) FROM post WHERE remove = 0 AND ;");
 		//use the function getFans to grab all of your fans.
 
-		/*
-		//get postings from fans only, so that the wall isn't cluttered with other people's irrelevant stuff.
-		$fans = getFans($_SESSION['user_id'],1);
-
-		$stmt = $this->db->prepare("SELECT * FROM post WHERE remove = 0 AND u_id = :u_id ORDER BY date DESC;");
-		foreach($fans as $f){
-			$stmt->bindParam("u_id",$f['u_id']);
-			$stmt->execute();
-			$data = $stmt->fetch(PDO::FETCH_ASSOC);
-		}
-		*/
-
 		if(!isset($startLimit) || !is_numeric($startLimit))
 			$startLimit = 0;
-		$stmt = $this->db->prepare("SELECT * FROM post WHERE remove = 0 AND r_id = :rid AND post_type = 0 ORDER BY date DESC LIMIT ".$startLimit.",20;");
+		if(((int)$ptype) == 1){ //sport
+			$stmt = $this->db->prepare("SELECT * FROM post WHERE remove = 0 AND r_id = :rid AND category = 1 AND post_type = 0 ORDER BY date DESC LIMIT ".$startLimit.",20;");
+		}else if(((int)$ptype) == 2){
+			$stmt = $this->db->prepare("SELECT * FROM post WHERE remove = 0 AND r_id = :rid AND category = 2 AND post_type = 0 ORDER BY date DESC LIMIT ".$startLimit.",20;");
+		}else{ //make support for a 3rd type of request.
+			$stmt = $this->db->prepare("SELECT * FROM post WHERE remove = 0 AND r_id = :rid AND post_type = 0 ORDER BY date DESC LIMIT ".$startLimit.",20;");
+		}
+
 		//$stmt->bindParam("id",$_SESSION['user_id']);
 		$stmt->bindParam("rid",$rid);
 		$res = $stmt->execute();
@@ -1205,7 +1332,25 @@ class User{
 		echo json_encode($jsonEncode);
 	}
 
-	public function getProfilePostings($rid,$startLimit = 0){
+	public function addPostingCategory($post){
+		$jsonEncode = array("status"=>"success");
+
+		$update = "UPDATE post SET category = :cat, category_broad = :cat_b WHERE id = :post_id;";
+		$stmt = $this->db->prepare($update);
+		$stmt->bindParam("cat",$post['cat']); //category
+		$stmt->bindParam("cat_b",$post['cat_b']); //category broad
+		$stmt->bindParam("post_id",$post['post_id']); //post id
+		$res = $stmt->execute();
+
+		if(!$res){
+			$jsonEncode['status'] = "error";
+			$jsonEncode['status_msg'] = "There was a problem associating the category with the posting.";
+		}
+
+		echo json_encode($jsonEncode);
+	}
+
+	public function getProfilePostings($rid,$startLimit = 0,$ptype){
 		/*
 			Account for multiple pages to be loaded by this function. And also take into account
 			the fans that you are going to see their postings for.
@@ -1214,30 +1359,38 @@ class User{
 
 		if(!isset($startLimit) || !is_numeric($startLimit))
 			$startLimit = 0;
-		$stmt = $this->db->prepare("SELECT * FROM post WHERE remove = 0 AND r_id = :rid AND post_type = 0 ORDER BY date DESC LIMIT ".$startLimit.",10;");
+		$amountLoad = 10;
+		$startLimit *= $amountLoad;
+
+		if(((int)$ptype) == 1){ //sport
+			$stmt = $this->db->prepare("SELECT * FROM post WHERE remove = 0 AND category = 1 AND r_id = :rid AND post_type = 0 ORDER BY date DESC LIMIT ".$startLimit.",".$amountLoad.";"); // AFTER DESC:  LIMIT ".$startLimit.",10;
+		}else if(((int)$ptype) == 2){
+			$stmt = $this->db->prepare("SELECT * FROM post WHERE remove = 0 AND category = 2 AND r_id = :rid AND post_type = 0 ORDER BY date DESC LIMIT ".$startLimit.",".$amountLoad.";"); // AFTER DESC:  LIMIT ".$startLimit.",10;
+		}else{
+			$stmt = $this->db->prepare("SELECT * FROM post WHERE remove = 0 AND r_id = :rid AND post_type = 0 ORDER BY date DESC LIMIT ".$startLimit.",".$amountLoad.";"); // AFTER DESC:  LIMIT ".$startLimit.",10;
+		}
 		$stmt->bindParam("rid",$rid);
 		$res = $stmt->execute();
 		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-		$stmt2 = $this->db->prepare("SELECT COUNT(id) FROM post WHERE remove = 0 AND r_id = :rid AND post_type = 0;");
+		if(((int)$ptype) == 1){ //sport
+			$stmt2 = $this->db->prepare("SELECT COUNT(id) FROM post WHERE remove = 0 AND category = 1 AND r_id = :rid AND post_type = 0;");
+		}else if(((int)$ptype) == 2){
+			$stmt2 = $this->db->prepare("SELECT COUNT(id) FROM post WHERE remove = 0 AND category = 2 AND r_id = :rid AND post_type = 0;");
+		}else{
+			$stmt2 = $this->db->prepare("SELECT COUNT(id) FROM post WHERE remove = 0 AND r_id = :rid AND post_type = 0;");
+		}
 		$stmt2->bindParam("rid",$rid);
 		$stmt2->execute();
 		$data2 = $stmt2->fetch(PDO::FETCH_ASSOC);
 
-		$jsonEncode['amt'] = intval(ceil($data2['COUNT(id)']/10));
+		$jsonEncode['amt'] = intval(ceil($data2['COUNT(id)']/$amountLoad));
 
 		foreach($data as $id=>$post){
 			$post['name'] = $this->userInfo($post['u_id']);
 			$post['date'] = relTime($post['date']);
 			$jsonEncode['data'][] = $post;
 		}
-
-		/*
-		}else{
-			$jsonEncode['status']['status'] = "error";
-			$jsonEncode['status']['status_msg'] = "There was an error retrieving your postings.";
-		}
-		*/
 
 		echo json_encode($jsonEncode);
 	}
@@ -1397,7 +1550,7 @@ class User{
 
 		foreach($res as $item){
 			$stmt = $this->db->prepare("UPDATE lineup SET color_id = :cid, font_id = :fid WHERE id = :id AND u_id = :u_id;");
-			$r1 = rand(0,4);
+			$r1 = rand(0,7);
 			$stmt->bindParam("cid",$r1);
 			//$r2 = rand(0,1);
 			$r2 = 0;
@@ -1813,7 +1966,9 @@ class User{
 				'useractionid'	=> $postData['u_id'],   //get this from the post db
 				'postid'		=> $post['r_id']
 			);
+			ob_start();
 			$this->makeNotification($params);
+			ob_end_clean();
 		}
 
 		echo json_encode($jsonEncode);
@@ -2256,7 +2411,7 @@ class User{
 	}
 
 	public function clap($post){
-		$jsonArray = array("status"=>"success");
+		$jsonArray2 = array("status"=>"success");
 		$stmt = $this->db->prepare("SELECT COUNT(id) FROM clap WHERE u_id = :uid AND r_id = :rid;");
 		$stmt->bindParam("uid",$_SESSION['user_id']);
 		$stmt->bindParam("rid",$post['r_id']);
@@ -2272,12 +2427,12 @@ class User{
 			$res = $stmt->execute();
 
 			if(!$res){
-				$jsonArray['status'] = "error";
-				$jsonArray['status_msg'] = "We were unable to clap this for you.";
+				$jsonArray2['status'] = "error";
+				$jsonArray2['status_msg'] = "We were unable to clap this for you.";
 			}
 		}else{
-			$jsonArray['status'] = "error";
-			$jsonArray['status_msg'] = "You already clapped this post.";
+			$jsonArray2['status'] = "error";
+			$jsonArray2['status_msg'] = "You already clapped this post.";
 		}
 
 		$stmt2 = $this->db->prepare("SELECT * FROM post WHERE id = :r_id LIMIT 1;");
@@ -2296,11 +2451,6 @@ class User{
 		else
 			$thumbnailPic = "";
 
-		/*if($postData['type'] == 0)
-			$postData['type'] = 1;
-		else if($postData['type'] == 1)
-			$postData['type'] = 0;*/
-
 		$params = array(
 			'snapshotmult' 	=> $thumbnailPic,  //get this from the post db
 			'actiontype' 	=> 1, //0 is commented
@@ -2309,9 +2459,11 @@ class User{
 			'useractionid'	=> $postData['u_id'],   //get this from the post db
 			'postid'		=> $post['r_id']
 		);
+		ob_start();
 		$this->makeNotification($params);
+		ob_end_clean();
 
-		echo json_encode($jsonArray);
+		echo json_encode($jsonArray2);
 	}
 
 	public function grabClaps($rid){
@@ -2333,8 +2485,12 @@ class User{
 
 	public function grabThoughtstream($pid){
 		$jsonEncode = array("status"=>"success");
-		$pid *= 10; //grab at least 20 postings, request the amount from where to grab them
-		$stmt = $this->db->prepare("SELECT * FROM post WHERE remove = 0 AND post_type = 1 ORDER BY date DESC LIMIT :pid, 20;");
+
+		//SET THIS AMOUNT TO THE AMOUNT OF ITEMS YOU WANT LOADED.
+		$loadAmount = 20;
+
+		$pid *= $loadAmount; //grab at least 20 postings, request the amount from where to grab them
+		$stmt = $this->db->prepare("SELECT * FROM post WHERE remove = 0 AND post_type = 1 ORDER BY date DESC LIMIT :pid, ".$loadAmount.";"); //AFTER DESC:
 		$stmt->bindParam("pid",$pid,PDO::PARAM_INT);
 		$res = $stmt->execute();
 		$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -2343,12 +2499,14 @@ class User{
 		$stmt2->execute();
 		$data2 = $stmt2->fetch(PDO::FETCH_ASSOC);
 
-		$jsonEncode['amt'] = intval(ceil($data2['COUNT(id)']/20));
+		$jsonEncode['amt'] = intval(ceil($data2['COUNT(id)']/$loadAmount));
 
 		foreach($data as $id=>$post){
 			$post['name'] = $this->userInfo($post['u_id']);
 			$post['date'] = relTime($post['date']);
 			$jsonEncode['data'][] = $post;
+			//echo "<h3 style='color:red;'>".$post['id']."</h3> <h3>".$post['text']."</h3>";
+			//echo "<hr />";
 		}
 		echo json_encode($jsonEncode);
 	}
@@ -3263,6 +3421,105 @@ class User{
 		}
 
 		//print_r($haystack);
+		echo json_encode($jsonEncode);
+	}
+
+	public function profileSong($songPOST){
+		$jsonEncode = array("status"=>"success");
+
+		$stmt = $this->db->prepare("UPDATE user SET profile_music = :p_sid WHERE id = :uid;");
+		$stmt->bindParam("uid",$_SESSION['user_id']);
+		$stmt->bindParam("p_sid",$songPOST['song_id']);
+		$res = $stmt->execute();
+
+		if(!$res){
+			$jsonEncode['status'] = "error";
+			$jsonEncode['status_msg'] = "There was an issue setting up a new profile song for your account.";
+		} //else everything came through properly without error
+
+		echo json_encode($jsonEncode);
+	}
+
+	public function getProfileSong(){
+		$jsonEncode = array("status"=>"success");
+
+		$select = "SELECT profile_music FROM user WHERE id = :uid;";
+		$stmt = $this->db->prepare($select);
+		$stmt->bindParam("uid",$_SESSION['user_id']);
+		$stmt->execute();
+
+		$data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		if($stmt){
+			$select = "SELECT * FROM tune WHERE id = :i;";
+			$stmt = $this->db->prepare($select);
+			$stmt->bindParam("i",$data['profile_music']);
+			$stmt->execute();
+
+			$data2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+			$jsonEncode['data'] = $data2;
+		}else{
+			$jsonEncode['status'] = "error";
+			$jsonEncode['status_msg'] = "There was an error trying to retrieve the profile song.";
+		}
+
+		echo json_encode($jsonEncode);
+	}
+
+	public function getSongsAll($s_id){
+		$jsonEncode = array("status"=>"success");
+
+		$stmt = $this->db->prepare("SELECT y_id, name, album, artist FROM tune WHERE id = :sid LIMIT 1;");
+		$stmt->bindParam("sid",$s_id);
+		$res = $stmt->execute();
+
+		if(!$res){
+			$jsonEncode['status'] = "error";
+			$jsonEncode['status_msg'] = "There was a problem getting information corresponding to that song.";
+		}else{	//format the data for acceptance
+			$data = $stmt->fetch(PDO::FETCH_ASSOC);
+			$jsonEncode['data'] = $data;
+		}
+
+		echo json_encode($jsonEncode);
+	}
+
+	public function grabPreferences(){
+		$jsonEncode = array("status"=>"success");
+
+		$stmt = $this->db->prepare("SELECT * FROM preferences WHERE u_id = :u_id;");
+		$stmt->bindParam("u_id",$_SESSION["user_id"]);
+		$res = $stmt->execute();
+
+		if(!$res){
+			$jsonEncode['status'] = "error";
+			$jsonEncode['status_msg'] = "There was a problem retrieving your preferences information.";
+		}else{ //grab the info
+			$data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			$data_temp = array();
+
+			foreach($data as $d){
+				if($d['type'] == 0){ //sport item
+					$stmt2 = $this->db->prepare("SELECT * FROM sport WHERE id = :id;");
+					$stmt2->bindParam("id",$d['preference']);
+					$res = $stmt2->execute();
+					$data2 = $stmt2->fetch(PDO::FETCH_ASSOC);
+
+					$data_temp[] = array("id"=>$data2['id'],"type"=>"0","item"=>$data2['sport']);
+				}else{				 //music item
+					$stmt2 = $this->db->prepare("SELECT * FROM genre WHERE id = :id;");
+					$stmt2->bindParam("id",$d['preference']);
+					$res = $stmt2->execute();
+					$data2 = $stmt2->fetch(PDO::FETCH_ASSOC);
+
+					$data_temp[] = array("id"=>$data2['id'],"type"=>"1","item"=>$data2['genre']);
+				}
+			}
+
+			$jsonEncode['data'] = $data_temp;
+		}
+
 		echo json_encode($jsonEncode);
 	}
 }

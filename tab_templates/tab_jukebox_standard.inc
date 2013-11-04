@@ -2,20 +2,18 @@
 .add-music{
 	padding:10px;
 	/*background-color:rgba(255,255,255,.4);*/
-	background-color:yellow; /* #fc5a1e */
+	/*background-color:#fc5a1e;*/ /* #fc5a1e */
 	/*-moz-border-radius:5px;
 	-webkit-border-radius:5px;
 	border-radius:5px;
 	border:0px solid #000;*/
 }.playlist-area{
-	background-color:yellow;
 	padding:10px;
 }.music-area{
 
 }.popupadd{
 	width:150px;
 	display:none;
-	background-color:#156ed4;
 	border:1px solid yellow;
 	position:absolute;
 	-moz-border-radius:5px;
@@ -101,6 +99,25 @@ function searchMusic(){
   	}
 }
 
+function profileMusic(sid){
+	$.ajaxSetup({async:false});
+	var actionUrl = "actions.php?type=profileSong";
+	$.post(
+		actionUrl,
+		{
+			song_id: sid
+		},
+		function(data,status){
+			var parseJSON = $.parseJSON(data);
+			if(parseJSON.status == "error"){
+				alert(parseJSON.status_msg);
+			}else{
+				alert("You have successfully changed your profile song!");
+			}
+		}
+	);
+}
+
 var musicArray = [];
 
 function showMusic(){
@@ -128,10 +145,19 @@ function showMusic(){
 															<button class='btn btn-mini btncustom22' style='color:black; margin-left:10px; background-color:#fc5a1e;' onclick='javascript:changeID([\""+parseJSON.data[i].y_id+"\",\""+parseJSON.data[i].name+"\",\""+parseJSON.data[i].album+"\",\""+parseJSON.data[i].artist+"\"]);'>PLAY</button>\
 														</td>\
 														<td>\
-															"+parseJSON.data[i].name+"\
+															<span style='color:black;'>"+parseJSON.data[i].name+"</span>\
 														</td>\
-														<td width='50px;'>\
-															<div class='popup"+parseJSON.data[i].id+" popupadd'></div><button class='btn btn-mini btncustom22 add-tune'  style='background-color:#fc5a1e;' onclick='addTo("+parseJSON.data[i].id+");'><i class='icon-plus'></i></button><i class='icon-trash icon-white delete-tune' onclick='removeTune("+parseJSON.data[i].id+");' title='Delete tune' style='position:relative; top:2px; left:3px; cursor:pointer;'></i></table>\
+														<td width='70px;'>\
+															<div class='popup"+parseJSON.data[i].id+" popupadd'></div>\
+															<i class='icon-trash delete-tune' onclick='removeTune("+parseJSON.data[i].id+");' title='Delete tune' style='position:relative; top:3px; left:3px; cursor:pointer; float:right;'></i>\
+															<div class='btn-group'>\
+																<button class='btn btn-mini btncustom22' style='background-color:#fc5a1e;' onclick='profileMusic("+parseJSON.data[i].id+");'>\
+																	<i class='icon-user icon-black;'></i>\
+																</button>\
+																<button class='btn btn-mini btncustom22 add-tune'  style='background-color:#fc5a1e;' onclick='addTo("+parseJSON.data[i].id+");'>\
+																	<i class='icon-plus'></i>\
+																</button>\
+															</div>\
 														</td>\
 													</tr>\
 												</table>\
@@ -312,12 +338,12 @@ function grabPlaylist(){
 			if(parseJSON != undefined){
 				$(".playlist-list").empty();
 				$(".playlist-list").html("<tr>\
-								<th style='border-bottom:1px dashed #156ed4; width:45px;'></th><th style='color:white; border-bottom:1px dashed #156ed4; color:black;' align='left'></th><th style='border-bottom:1px dashed #156ed4; color:black;' width='80px;'></th>\
+								<th style='border-bottom:1px dashed white; width:45px;'></th><th style='color:black; border-bottom:1px dashed white; color:black;' align='left'></th><th style='border-bottom:1px dashed white; color:black;' width='80px;'></th>\
 							</tr>");
 				if(parseJSON.data.length > 0){
 					for(var i = 0;i < parseJSON.data.length;i++){
 						$(".playlist-list tr:last").after("<tr>\
-									<td width='30px;'><button class='btn btn-mini btn-primary' onclick='listPlaylistSongs("+parseJSON.data[i].id+");'><b><span style='color:yellow;'>VIEW</span></b></button></td><td style='color:#156ed4;'>"+parseJSON.data[i].title+"</td><td width='35px;'><i class='icon-trash' onclick='removePlaylist("+parseJSON.data[i].id+");'></i></td>\
+									<td width='30px;'><button class='btn btn-mini btncustom' onclick='listPlaylistSongs("+parseJSON.data[i].id+");'><b><span style='color:blue;'>VIEW</span></b></button></td><td style='color:black;'>"+parseJSON.data[i].title+"</td><td width='35px;'><i class='icon-trash' onclick='removePlaylist("+parseJSON.data[i].id+");'></i></td>\
 								</tr>");
 
 					}
@@ -382,7 +408,7 @@ function listPlaylistSongs(playlist_id){
 </script>
 <style type="text/css">
 .playlist-manage{
-	background-color:yellow;
+	/*background-color:#fc5a1e;*/
 }.music-list-pop li:hover{
 	background-color:#5a5aff;
 	cursor:pointer;
@@ -392,29 +418,29 @@ function listPlaylistSongs(playlist_id){
 <div class="add-music">
 	<table border="0" cellpadding="10px;" width="100%;">
 		<tr>
-			<td><img src="http://i.imm.io/YggK.png" /></td><!-- http://i49.tinypic.com/23r3bq0.png http://i.imm.io/W34m.png http://i49.tinypic.com/23r3bq0.png -->
+			<td><img src="http://i.imm.io/1dzzT.png" width="75px;" /></td><!-- http://i49.tinypic.com/23r3bq0.png http://i.imm.io/W34m.png http://i49.tinypic.com/23r3bq0.png -->
 			<td align='left'>
-				<b style="color:#156ed4;">Search for your favorite music.</b><br />
+				<b style="color:black;">Search for your favorite music.</b><br />
 				<input type="text" style="height:28px; width:250px;" class="music-search" placeholder="Artists, Albums, Songs ..." />
-				<button class="btn btn-primary" type="button" style="color:black; position:relative; bottom:5px;" onclick="javascript:searchMusic();"><span style='color:yellow;'>Search</span></button><br />
-				<b style="color:#156ed4; position:relative; bottom:6px;">Create a unique playlist.</b>
+				<button class="btn btncustom" type="button" style="color:black; position:relative; bottom:5px;" onclick="javascript:searchMusic();"><span style='color:blue; font-weight:bold;'>Search</span></button><br />
+				<b style="color:black; position:relative; bottom:6px;">Create a unique playlist.</b>
 			</td>
 			<td>
 				<div style='position:relative; bottom:4px;'>
-					<b style='color:black; font-size:13px;'>Powered by</b><br />
-					<img src='http://www.grooveshark.com/webincludes/logo/Grooveshark_Logo_Horizontal.png' width='100px;' />
+					<b style='color:blue; font-size:13px;'>Powered by</b><br />
+					<img src='http://i.imm.io/1dzzG.png' width='100px;' />
 				</div>
 			</td>
 		</tr>
 	</table>
 	<div class="music-results">
-		<i style="margin-left:75px; display:none; color:black;" class="search-title">Results for: --</i>
+		<i style="margin-left:75px; display:none; color:white;" class="search-title">Results for: --</i>
 		<table border="0" width="80%" style="margin-left:75px;" cellpadding="8" class="song-list"><tr></tr></table>
 	</div>
 </div>
 
 <div class='playlist-manage'>
-	<center><button class='btn btn-small btn-primary' style='color:yellow;' onclick='showNewPlaylist();'>New playlist</button></center>
+	<center><button class='btn btn-small btncustom' style='color:blue; font-weight:bold;' onclick='showNewPlaylist();'>New playlist</button></center>
 
 	<div class='new-playlist' style='display:none;'>
 		<table border='0' style='margin-left:20px;'>
@@ -433,7 +459,7 @@ function listPlaylistSongs(playlist_id){
 <div class="playlist-area">
 	<button class="btn btn-mini btn-inverse all-m" style="position:absolute; margin-top:8px; margin-left:6px;" type="button" onclick="showMusic();"><span style='color:white; font-size:18px;'>&laquo;</span> All Music</button>
 	<center>
-		<span style="font-size:25px; color:black; /*text-shadow: 2 2 5 yellow;*/ border-bottom:2px solid #156ed4; font-weight:bold;">Playlists</span>
+		<span style="font-size:20px; color:black; /*text-shadow: 2 2 5 yellow;*/ font-weight:bold;">Playlists</span>
 	</center>
 	<table border="0" width="100%;">
 		<tr>
@@ -459,13 +485,8 @@ function listPlaylistSongs(playlist_id){
 <div class="music-area">
 	<div style="margin-top:-30px;">
 		<div style="text-align:center; position:relative; bottom:3px; padding-left:10px; padding-right:10px;">
-			<span class='playlist-name' style="font-size:25px; color:black; border-bottom:2px solid #156ed4; font-weight:bold;">Music</span>
+			<span class='playlist-name' style="font-size:20px; color:black; font-weight:bold;">Music</span>
 		</div>
-		<table border="0" width="100%" style="background-color:yellow;">
-			<tr>
-				<td width="100px;" align="left"><!--<button class="btn btn-mini btn-inverse" style="margin-left:10px;"><span style='color:white; font-size:18px;'>&laquo;</span> All Music</button>--></td>
-			</tr>
-		</table>
 		<table border="0" class="music-list" cellpadding="5" width="100%;"></table>
 	</div>
 </div>

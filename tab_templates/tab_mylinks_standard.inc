@@ -8,7 +8,7 @@
 	padding:10px 10px 0px 10px;
 	margin-top:5px;
 }.link-wrap{
-	background-color:black;
+	background-color:white;
 	/*position:relative;
 	right:6px;
 	bottom:4px;
@@ -87,12 +87,12 @@ function loadLinksOntoPage(){
 				var parseJSON = $.parseJSON(data);
 				if(parseJSON.length > 0){
 					$(".link-content-area").empty();
-					$(".link-content-area").append("<tr style='background-color:black;'><th style='color:yellow; border-bottom:1px dashed #FCDC3B; margin-left:10px;' align='left'>Link</th><th style='color:yellow; border-bottom:1px dashed #FCDC3B;' align='center'>Share</th></tr>");
+					$(".link-content-area").append("<tr style='background-color:white;'><th style='color:black; border-bottom:1px dashed black; margin-left:10px;' align='left'>Link</th><th style='color:black; border-bottom:1px dashed black;' align='center'>Share</th></tr>");
 					var edit = "";
 					for(var i = 0;i < parseJSON.length;i++){
 						if(user_id == logId){
 
-							edit = "<a href='javascript:removeLink("+parseJSON[i].id+");'><i class='icon-trash icon-white' onclick='javascript:deleteLink();' style='margin-left:3px;'></i></a>";
+							edit = "<a href='javascript:removeLink("+parseJSON[i].id+");'><i class='icon-trash' onclick='javascript:deleteLink();' style='margin-left:3px;'></i></a>";
 						}else{
 							$(".addlinkbtn").remove(); $(".addLink").remove();
 						}
@@ -110,8 +110,13 @@ $(document).ready(function(){
 	loadLinksOntoPage();
 });
 </script>
+<style type="text/css">
+.link-content-area a{
+	color:blue !important;
+}
+</style>
 <div class="link-wrap">
-	<table border='0' width='100%'><tr><td align='center'><button class='btn btn-primary btncustom addlinkbtn' onclick='javascript:addLink();' style='color:black; text-align:center;'><span style='color:#156ed4;'>Add Link</span></button></td></tr></table>
+	<table border='0' width='100%'><tr><td align='center'><button class='btn btncustomwhite addlinkbtn' onclick='javascript:addLink();' style='color:black; text-align:center; background-color:white;'><span style='color:#156ed4;'>Add Link</span></button></td></tr></table>
 	<div class='addLink' style='display:none;'>
 		<button class='btn btncustom' style='color:black; float:right;' onclick='javascript:submitLink();'>Submit</button>
 		<input type='text' style='height:30px; width:30%;' class='link-text' placeholder='Link Title' />

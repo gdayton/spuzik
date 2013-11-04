@@ -52,6 +52,10 @@ $app->put('/media/:id', 'updateDescription');	// Updates or adds a description t
 $app->delete('/media/:id', 'deleteMedia');		// Deletes an image from the media tab.
 $app->get('/mediac/:id', 'getMediaCollection'); // Get a media zone collection object
 
+$app->get('/tune/:id', 'getTune');				// Returns all information associated with this tune.
+
+$app->get('/groovesearch/:search', 'getGrooveshark');			// Returns JSON information about song.
+
 //TESTERS
 //$app->get('/lineupremove', 'lineupRemove');	//Remove an item from the lineup.
 //$app->get('/lineupadd', 'lineupAdd');
@@ -465,5 +469,22 @@ function getMediaCollection($uid){
 	$image->getImages($uid);
 
 	$image = null;
+}
+
+/*
+	Get the tune information according to passed id.
+*/
+function getTune($id){
+	echo "some stuff";
+}
+
+/*
+	List grooveshark tune information
+*/
+function getGrooveshark($search){
+	$searchTerm = urlencode($search);
+	$json = file_get_contents("http://tinysong.com/s/".$searchTerm."?format=json&limit=10&key=e645c4270980103b19215d1bf7439438");
+
+	echo $json;
 }
 ?>

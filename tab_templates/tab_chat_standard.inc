@@ -1,3 +1,4 @@
+<!-- #373737 -->
 <style type="text/css">
 .header-txt{
 	font-size:18px;
@@ -34,7 +35,7 @@
 	float:left;
 	font-size:14px;
 	margin-left:5px;
-	color:yellow;
+	color:black;
 }.msg-cont .invitation{
 	color:black;
 	background-color:yellow;
@@ -58,7 +59,7 @@
 	padding:5px 0px 5px 0px;
 	border-bottom:1px dashed #3188eb;
 }.name-item:hover{
-	background-color:#3188eb;
+	background-color:#373737;
 }
 </style>
 <script>
@@ -148,7 +149,7 @@ function getChatUsers(/*type*/){ //type must be equal to 0 for regular users, an
 							}
 							//$(".name-holder").append("<div class='name-item'>"+online+"<a href=\"javascript:chatWith("+parseJSON.data[i].u_id+","+name_disp+","+fname_disp+");\"><!--<span class='badge badge-important' style='color:white; float:left; background-color:red;'>!</span>--><span style='color:yellow;'>"+name+"</span><img style='float:right;' src='http://cdn1.iconfinder.com/data/icons/silk2/emoticon_smile.png' /><img class='img-circle' src='/usr_content/pics/"+parseJSON.data[i].profile_pic+"_t.jpg' /></a></div>");
 							$(".name-holder").append("<div class='name-item'>\
-								<a href=\"javascript:chatWith("+parseJSON.data[i].u_id+","+name_disp+","+fname_disp+");\">\
+								<a style=\"color:black;\" href=\"javascript:chatWith("+parseJSON.data[i].u_id+","+name_disp+","+fname_disp+");\">\
 								<table border='0' width='100%'>\
 								<tr>\
 									<td width='40px;'><img class='img-rounded' src='http://54.243.129.126/usr_content/pics/"+parseJSON.data[i].profile_pic+"_t.jpg' /></td>\
@@ -243,7 +244,7 @@ function grabChats(id,fname){
 			if(parseJSON != undefined){
 				for(var i = 0;i < parseJSON.data.length;i++){
 					$(".container-clip").append("<div class='chat-item'>\
-														<i style='color:white; float:right;'>"+parseJSON.data[i].date+"</i><span style='color:white;'><b style='color:yellow; margin-right:3px;'>"+((parseJSON.data[i].who == 0) ? "Me" : fname)+"</b>"+parseJSON.data[i].msg+"</span>\
+														<i style='color:black; float:right;'>"+parseJSON.data[i].date+"</i><span style='color:black;'><b style='color:blue; margin-right:3px;'>"+((parseJSON.data[i].who == 0) ? "Me" : fname)+"</b>"+parseJSON.data[i].msg+"</span>\
 												</div>");
 				}
 			}
@@ -873,7 +874,7 @@ $(window).scroll(function() {
 </script>
 <style type='text/css'>
 .spec-tab{
-	background-color:black;
+	background-color:white;
 	margin-top:5px;
 }.indv{
 	width:49%;
@@ -887,7 +888,7 @@ $(window).scroll(function() {
 	cursor:pointer;
 	text-align:center;
 }.indv:hover{
-	background-color:#333;
+	background-color:#eee;
 }.group{
 	cursor:pointer;
 	width:49%;
@@ -901,14 +902,14 @@ $(window).scroll(function() {
 	border-top-right-radius:5px;
 	text-align:center;
 }.group:hover{
-	background-color:#333;
+	background-color:#eee;
 }.chat-user{
 	font-size:16px;
 	font-weight:bold;
 }.btn-group-top{
 	margin-top:5px;
 }.chatrooms table tr:hover{
-	background-color:#3188eb;
+	background-color:#eee;
 }.selection-area{
 	list-style:none;
 }.selection-area li{
@@ -947,8 +948,8 @@ $(window).scroll(function() {
 
 <div class="msg-cont">
 	<div class='spec-tab'>
-		<div class='group' onclick='loadChatRooms();' style='color:yellow;'><img src='http://i.imm.io/Zlqm.png' width='22px;' height='22px;'/>Chat Rooms</div>
-		<div class='indv'  onclick='loadIndv();' style='color:yellow;'><img src='http://i.imm.io/ZlqC.png' width='28px;' height='28px;'/> Chat</div>
+		<div class='group' onclick='loadChatRooms();' style='color:black;'><img src='http://i.imm.io/1dzGO.png' width='22px;' height='22px;'/>Chat Rooms</div>
+		<div class='indv'  onclick='loadIndv();' style='color:black;'><img src='http://i.imm.io/1dzHj.png' width='28px;' height='28px;'/> Chat</div>
 	</div>
 	<div class='group-cont' style='display:none;'>
 		<div class='btn-group-top' style='margin-bottom:15px;'>

@@ -11,7 +11,7 @@
 		position:fixed;
 		z-index:15000;
 		/* http://i47.tinypic.com/23k9bgn.png O8q9 http://i.imm.io/O8qQ.png O8rH O8wQ http://i50.tinypic.com/3a0zp.png O8z9 08zu 08BU O8Ce OlIn 08CG OlJc OlKx OlKZ OlLG OlOU OlRY OlVX OlXA OlYj OlZT Om0Q Om1C Om20 Om3v Om42 OHoi OHpc http://i47.tinypic.com/f27ome.png OHx4 OIon OIoS OIwN OIx6 OIAb OIAs OIEi OIJ3 OIJx OIJU OILr OILK OIMi OIMW OINc P8Ym http://i50.tinypic.com/v7d40i.gif http://i.imm.io/RtVp.png http://i.imm.io/SMyU.png*/
-		background-image:url('/data/img/header_upper_left.png');
+		background-image:url('http://i.imm.io/1flQs.png');
 		background-repeat:no-repeat;
 		background-size:250px 60px;
 		background-position:15px 3px;
@@ -141,7 +141,7 @@
 <table border="0" class="header-line">
 	<tr>
 		<td style="min-width:245px;">
-			<a href="javascript:void(0);" onclick="switchPage('notifications');"><div style="width:245px; height:65px;"></div></a>
+			<a href="javascript:void(0);" onclick="switchPage('profile');"><div style="width:245px; height:65px;"></div></a>
 		</td>
 		<td width="40%" style="padding-left:20px;">
 			<script>
@@ -170,7 +170,7 @@
 						displayPause();
 						displayLoading();
 					}else if(newState == "failed"){ //failed music
-						alert("failed to load");
+						//alert("failed to load");
 					}
 				}
 
@@ -195,6 +195,11 @@
 				}
 				*/
 
+				$(document).ready(function(){
+					$(".playlist-container").css("width",$(".music-player").width());
+					//window.onresize = function() { $(".playlist-container").css("width",$(".music-player").width()); };
+				});
+
 				function pauseVideo() {
 					window.player.pauseStream();
 					displayPlay();
@@ -217,7 +222,17 @@
 				$(document).ready(function() {
 					if(getUrlVars()["p"] == "notifications"){
 						setTimeout(function(){
-							loadMyMusic();
+
+							//loadMyMusic(); //initialize the player correctly
+							var songNew = getSongsAll(profileSongID); //pass the profile song id into here
+							changeID(songNew); //pass the user's profile song into these parameters
+							playlistStats(songNew);
+						},3000);
+					}else if(getUrlVars()["p"] == "profile"){ //load the profiles user's music
+						setTimeout(function(){
+							var tAr = getSongsAll(profileSongID); //pass the profile song id into here
+							changeID(tAr[0]); //pass the user's profile song into these parameters
+							playlistStats(tAr);
 						},3000);
 					}
 				});
@@ -237,7 +252,9 @@
 
 				function populateInfo(data){
 					$(document).ready(function(){
-						$(".song-name").html(data[1]+" - "+data[2]);
+						if(data != undefined){
+							$(".song-name").html(data[1]+" - "+data[2]);
+						}
 					});
 				}
 
@@ -274,8 +291,10 @@
 
 				function initScriptSpot(musicArray){ //searchTerm, AKA music terms
 					populateInfo(musicArray);
-					videoID = musicArray[0];
-					playSong(videoID);
+					if(musicArray != undefined){
+						videoID = musicArray[0];
+						playSong(videoID);
+					}
 				}
 
 				$(".playlist-container").css("width",$(".music-player").width());
@@ -329,7 +348,7 @@
 							$(".playlist-name").html(parseJSON.data.title);
 							$(".controls").attr("songID",0);
 							changeID(songsAll[0]);
-							playlistStats(songsAll[0]);
+							playlistStats(songsAll);
 						}
 					});
 				}
@@ -350,9 +369,23 @@
 							$(".playlist-name").html("All Music");
 							$(".controls").attr("songID",0);
 							changeID(songsAll[0]); 			//place this as current id for song to play
-							playlistStats(songsAll[0]); 	//update the text that goes along w/ it
+							playlistStats(songsAll); 	//update the text that goes along w/ it
 						},
 					});
+				}
+
+				function getSongsAll(s_id){ //pass song id and get array with info returned from DB., returns the array w/ info
+					var songsAllArray = [];
+					$.ajax({
+						url: "actions.php?type=getSongsAll&s_id="+s_id,
+						success: function(data){
+							var parseJSON = $.parseJSON(data);
+							if(parseJSON != undefined){
+								songsAllArray.push([parseJSON.data.y_id,parseJSON.data.name,parseJSON.data.album,parseJSON.data.artist]);
+							}
+						},
+					});
+					return songsAllArray;
 				}
 
 				function nextSong(){
@@ -360,7 +393,7 @@
 						var newIndex = parseInt($(".controls").attr("songID"))+1;
 						changeID(songsAll[newIndex]); //pass the small array
 						$(".controls").attr("songID",parseInt($(".controls").attr("songID"))+1);
-						playlistStats(songsAll[newIndex]);
+						playlistStats(songsAll);
 					}
 				}
 
@@ -369,12 +402,8 @@
 						var newIndex = parseInt($(".controls").attr("songID")) - 1;
 						changeID(songsAll[newIndex]);
 						$(".controls").attr("songID",parseInt($(".controls").attr("songID"))-1);
-						playlistStats(songsAll[newIndex]);
+						playlistStats(songsAll);
 					}
-				}
-
-				function pressed(){
-					alert("happen");
 				}
 			</script>
 			<div id="player"></div>
@@ -414,7 +443,7 @@
 						<td></td>
 						<td>
 							<div style='position:absolute; bottom:3px;'>
-								<a href='javascript:expandPlaylistView();' style='font-size:12px; float:right; color:black; margin-left:5px; font-weight:bold;'><i class='icon-music'></i> Switch <span class='music-error' style='color:red; display:none; font-size:12px; font-weight:bold;'>ERROR</span></a> <span style='font-size:13px; color:black;'>Current playlist: <b style='color:green;' class='playlist-name'>--</b> - <span style='color:orange;'>Song <span class='playlist-current'>0</span> of <span class='playlist-total'>0</span></span></style></span>
+								<a href='javascript:expandPlaylistView();' style='font-size:12px; float:right; color:black; margin-left:5px; font-weight:bold;'><i class='icon-music'></i> Switch <span class='music-error' style='color:red; display:none; font-size:12px; font-weight:bold;'>ERROR</span></a> <span style='font-size:13px; color:black;'>Current playlist: <b style='color:green;' class='playlist-name'>--</b> - <span style='color:red;'>Song <span class='playlist-current'>0</span> of <span class='playlist-total'>0</span></span></style></span>
 							</div>
 						</td>
 						<td></td>
@@ -469,6 +498,7 @@
 				if( (parseInt($(".controls").attr("songID")) + 1) > songsAll.length){
 					$(".playlist-current").html(songsAll.length);
 				}
+
 				$(".playlist-total").html(songsAll.length);
 			}
 
@@ -560,9 +590,9 @@
 						search();
 					search();
 				});
-				setInterval(function(){
+				/*setInterval(function(){
 					checkNotifications();
-				}, 1000);
+				}, 1000);*/
 			});
 
 			function checkNotifications(){
@@ -591,6 +621,9 @@
 				</div>
         	</form>
 		</td>
+		<td>
+			<a href="?p=unite" ><img src="http://i.imm.io/1dzW8.png" width="45px;" style="margin-left:135px;"/></a><!-- onclick="switchPage('unite');" -->
+		</td>
 		<td style="min-width:280px;">
 			<div class="name-drop">
 				<script>
@@ -612,15 +645,12 @@
 					border-radius:3px;
 				}
 				</style>
-				<div class="targeted" style="margin-left:25px;">
+				<div class="targeted" style="margin-left:25px; margin-top:5px;">
 					<a href='javascript:void(0);' onclick='switchPage("profile");'><img src="" width="30" height="30" style="margin-right:5px;" class="img-rounded profile-pic"/><span style="color:black; font-size:13px;" class="u_name"></span></a><i class="icon-chevron-down" onclick="toggleMenu()"></i>
 					<div class="user-menu" style="display:none;">
-						<a href="actions.php?type=logout" style="color:black;">Sign out</a>
+						<a href="actions.php?type=logout" style="color:black; font-size:13px;">Sign out</a>
+						<a href="#" style="color:black; font-size:13px;"><img src="https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/settings-24-128.png" width="16" height="16" style="margin-right:2px;"/>Settings</a>
 					</div>
-				</div>
-				<div class="notif" style='margin-right:3px;' onclick='switchPage("notifications");'>
-					<span class="badge badge-important notif-badge" style="background-color:red; position:absolute; margin-left:15px; display:none;"><span style="color:white;">!</span></span>
-					<img src="/data/img/home.png" width="30" height="30" style="margin-right:0px;"/>
 				</div>
 			</div>
 		</td>

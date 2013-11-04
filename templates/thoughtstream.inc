@@ -8,6 +8,8 @@ $(document).ready(function() {
 	},10);
 });
 
+var pageId = 1;
+
 function init(){
 	$(".type1").tooltip('toggle');
 	$(".type1").tooltip('hide');
@@ -26,6 +28,8 @@ function init(){
 		//alert(amt);
 		doit(amt);
 		amt++;
+		/*$(".link-view").css("background-color","yellow");
+		$(".link-view a").css("color","#2727ff");*/
 	},5000);
 	repaintPostings(0);
 
@@ -39,7 +43,19 @@ function init(){
 	$(".comment-tbox").elastic();
 
 	$(window).scroll(function(){
-		if($(window).scrollTop() == $(document).height() - $(window).height()){
+		if($(window).scrollTop() == ($(document).height() - $(window).height())){
+			loadMoreContent();
+		}
+	});
+
+	$(".load-more1").waypoint(function(direction){
+		if(direction == "down"){
+			loadMoreContent();
+		}
+	});
+
+	$(".load-more2").waypoint(function(direction){
+		if(direction == "down"){
 			loadMoreContent();
 		}
 	});
@@ -281,16 +297,16 @@ function repaintPostings(p_id){ //p_id is the page id/ infinite scroll page that
 								},
 								async: false
 							});
-							$(".link-view").css("background-color","yellow");
-							$(".link-view a").css("color","#2727ff");
+							/*$(".link-view").css("background-color","yellow");*/
+							$(".link-view a").css("color","blue");
 						}
 						if(i%2==0){
 							$(".stream1").append("<div class='notif-i'>\
 												<table border='0' width='100%'>\
 													<tr>\
-														<td valign='top' width='40px;'><img src='/usr_content/pics/"+parseJSON.data[i].name.profile_pic+"_t.jpg' class='img-rounded' width='40px' height='40px'><img src='/data/img/flag_red.png' style='margin-top:3px; display:block; margin-left:auto; margin-right:auto;' rel='tooltip' class='flag-post' title='Flag' data-placement='bottom' data-trigger='hover'/></td>\
-														<td style='padding-left:10px; font-size:12px; color:white;' valign='top'><div style='float:right;'><img src='/data/img/remove.png' onclick='removePosting("+parseJSON.data[i].id+")' rel='tooltip' title='Remove' data-placement='left' data-trigger='hover' style='width:12px; height:12px;'/></div><b style='color:#ffff00;'><a  style='color:#ffff33;' href='/?p=profile&id="+parseJSON.data[i].name.u_id+"'>"+((parseJSON.data[i].name.fname != undefined) ? parseJSON.data[i].name.fname : "")+""+((parseJSON.data[i].name.bname != undefined) ? parseJSON.data[i].name.bname : "")+""+((parseJSON.data[i].name.tname != undefined) ? parseJSON.data[i].name.tname : "")+" "+((parseJSON.data[i].name.lname != undefined) ? parseJSON.data[i].name.lname : "")+"</a></b>\
-														<div class='text'>"+( parseJSON.data[i].type != 3 ? parseJSON.data[i].text : "")+"\
+														<td valign='top' width='40px;'><img src='/usr_content/pics/"+parseJSON.data[i].name.profile_pic+"_t.jpg' class='img-circle' width='40px' height='40px'><img src='/data/img/flag_red.png' style='margin-top:3px; display:block; margin-left:auto; margin-right:auto;' rel='tooltip' class='flag-post' title='Flag' data-placement='bottom' data-trigger='hover'/></td>\
+														<td style='padding-left:10px; font-size:12px; color:white;' valign='top'><div style='float:right;'><!--<img src='/data/img/remove.png' onclick='removePosting("+parseJSON.data[i].id+")' rel='tooltip' title='Remove' data-placement='left' data-trigger='hover' style='width:12px; height:12px;'/>--></div><b style='color:#ffff00;'><a style='color:blue; position:relative; top:10px; font-size:15px;' href='/?p=profile&id="+parseJSON.data[i].name.u_id+"'>"+((parseJSON.data[i].name.fname != undefined) ? parseJSON.data[i].name.fname : "")+""+((parseJSON.data[i].name.bname != undefined) ? parseJSON.data[i].name.bname : "")+""+((parseJSON.data[i].name.tname != undefined) ? parseJSON.data[i].name.tname : "")+" "+((parseJSON.data[i].name.lname != undefined) ? parseJSON.data[i].name.lname : "")+"</a></b>\
+														<div class='text' style='color:black; padding:10px;'>"+( parseJSON.data[i].type != 3 ? parseJSON.data[i].text : "")+"\
 															"+xtra+"\
 														</div>\
 														<table border='0' width='100%'>\
@@ -298,11 +314,12 @@ function repaintPostings(p_id){ //p_id is the page id/ infinite scroll page that
 																<td valign='top'>\
 																	<div class='comment' style='color:#ffff00;'><div><span class='comment"+parseJSON.data[i].id+"'></span> <span style='display:none;' class='comment-hidden"+parseJSON.data[i].id+"'></span></div><a class='comment-load"+parseJSON.data[i].id+"' style='display:none;' href='javascript:loadMore("+parseJSON.data[i].id+");'></a><textarea class='comment-area-show"+parseJSON.data[i].id+"' type='text' placeholder='Comment...' style='resize:none; display:none; height:30px; font-size:12px; width:100%; margin-top:3px;' /></textarea><button class='btn btn-mini btncustom comment-area-show-button"+parseJSON.data[i].id+"' style='color:black; float:right; display:none;' onclick='makeComment2("+parseJSON.data[i].id+");'>Comment</button></span>\
 																</td>\
-																<td valign='bottom' align='right'>\
-																	<span style='font-size:12px;'>"+parseJSON.data[i].date+" ago</span>\
+																<td valign='bottom' align='middle'>\
+																	<span style='font-size:12px; color:grey;'>"+parseJSON.data[i].date+" ago</span>\
 																	<div class='btn-group'>\
-																		<button onclick='clap("+parseJSON.data[i].id+");' class='btn btn-small user_type btncustom btn-clap' rel='tooltip' title='Clap' data-placement='top' data-trigger='hover'><img src='http://i.imm.io/1454y.png' width='15px' height='15px' style='position:relative; bottom:2px;'/> <span style='color:black;' class='clap"+parseJSON.data[i].id+"'>0</span></button>\
-																		<button onclick='showComment("+parseJSON.data[i].id+");' style='height:26px;' class='btn btn-small user_type btncustom btn-respond' rel='tooltip' title='Respond' data-placement='top' data-trigger='hover'><img src='http://i.imm.io/1454a.png' width='20px' height='20px' style='position:relative; bottom:2px;'/></button>\
+																		<button onclick='clap("+parseJSON.data[i].id+");' class='btn btn-small user_type btn-inverse btn-clap' rel='tooltip' title='Clap' data-placement='top' data-trigger='hover'><img src='http://i.imm.io/1aktX.png' width='15px' height='15px' style='position:relative; bottom:2px;'/> <span style='color:yellow; font-weight:700;' class='clap"+parseJSON.data[i].id+"'>0</span></button>\
+																		<button onclick='unite();' class='btn btn-small btn-inverse' style='height:26px;'><img src='http://i.imm.io/1aqsI.png' width='15px' height='15px' /></button>\
+																		<button onclick='showComment("+parseJSON.data[i].id+");' style='height:26px;' class='btn btn-small user_type btn-inverse btn-respond' rel='tooltip' title='Respond' data-placement='top' data-trigger='hover'><img src='http://i.imm.io/1aktR.png' width='20px' height='20px' style='position:relative; bottom:2px;'/></button>\
 																	</div>\
 																</td>\
 															</tr>\
@@ -315,9 +332,9 @@ function repaintPostings(p_id){ //p_id is the page id/ infinite scroll page that
 							$(".stream2").append("<div class='notif-i'>\
 												<table border='0' width='100%'>\
 													<tr>\
-														<td valign='top' width='40px;'><img src='/usr_content/pics/"+parseJSON.data[i].name.profile_pic+"_t.jpg' class='img-rounded' width='40px' height='40px'><img src='/data/img/flag_red.png' style='margin-top:3px; display:block; margin-left:auto; margin-right:auto;' rel='tooltip' class='flag-post' title='Flag' data-placement='bottom' data-trigger='hover'/></td>\
-														<td style='padding-left:10px; font-size:12px; color:white;' valign='top'><div style='float:right;'><img src='/data/img/remove.png' onclick='removePosting("+parseJSON.data[i].id+")' rel='tooltip' title='Remove' data-placement='left' data-trigger='hover' style='width:12px; height:12px;'/></div><b style='color:#ffff00;'><a style='color:#ffff33;' href='/?p=profile&id="+parseJSON.data[i].name.u_id+"'>"+((parseJSON.data[i].name.fname != undefined) ? parseJSON.data[i].name.fname : "")+""+((parseJSON.data[i].name.bname != undefined) ? parseJSON.data[i].name.bname : "")+""+((parseJSON.data[i].name.tname != undefined) ? parseJSON.data[i].name.tname : "")+" "+((parseJSON.data[i].name.lname != undefined) ? parseJSON.data[i].name.lname : "")+"</a></b>\
-														<div class='text'>"+( parseJSON.data[i].type != 3 ? parseJSON.data[i].text : "")+"\
+														<td style='padding-left:10px; font-size:12px; color:white;' valign='top'>\
+															<div style='float:right;'><!--<img src='/data/img/remove.png' onclick='removePosting("+parseJSON.data[i].id+")' rel='tooltip' title='Remove' data-placement='left' data-trigger='hover' style='width:12px; height:12px;'/>--><b style='color:#ffff00;'><a style='color:blue; position:relative; top:10px; right:10px; font-size:15px;' href='/?p=profile&id="+parseJSON.data[i].name.u_id+"'>"+((parseJSON.data[i].name.fname != undefined) ? parseJSON.data[i].name.fname : "")+""+((parseJSON.data[i].name.bname != undefined) ? parseJSON.data[i].name.bname : "")+""+((parseJSON.data[i].name.tname != undefined) ? parseJSON.data[i].name.tname : "")+" "+((parseJSON.data[i].name.lname != undefined) ? parseJSON.data[i].name.lname : "")+"</a></b></div>\
+														<div class='text' style='color:black; padding:10px;'>"+( parseJSON.data[i].type != 3 ? parseJSON.data[i].text : "")+"\
 															"+xtra+"\
 														</div>\
 														<table border='0' width='100%'>\
@@ -325,21 +342,25 @@ function repaintPostings(p_id){ //p_id is the page id/ infinite scroll page that
 																<td valign='top'>\
 																	<div class='comment' style='color:#ffff00;'><div><span class='comment"+parseJSON.data[i].id+"'></span> <span style='display:none;' class='comment-hidden"+parseJSON.data[i].id+"'></span></div><a class='comment-load"+parseJSON.data[i].id+"' style='display:none;' href='javascript:loadMore("+parseJSON.data[i].id+");'></a><textarea class='comment-area-show"+parseJSON.data[i].id+"' type='text' placeholder='Comment...' style='resize:none; display:none; height:30px; font-size:12px; width:100%; margin-top:3px;' /></textarea><button class='btn btn-mini btncustom comment-area-show-button"+parseJSON.data[i].id+"' style='color:black; float:right; display:none;' onclick='makeComment2("+parseJSON.data[i].id+");'>Comment</button></span>\
 																</td>\
-																<td valign='bottom' align='right'>\
-																	<span style='font-size:12px;'>"+parseJSON.data[i].date+" ago</span>\
+																<td valign='bottom' align='middle'>\
+																	<span style='font-size:12px; color:grey;'>"+parseJSON.data[i].date+" ago</span>\
 																	<div class='btn-group'>\
-																		<button onclick='clap("+parseJSON.data[i].id+");' class='btn btn-small user_type btncustom btn-clap' rel='tooltip' title='Clap' data-placement='top' data-trigger='hover'><img src='http://i.imm.io/1454y.png' width='15px' height='15px' style='position:relative; bottom:2px;'/> <span style='color:black;' class='clap"+parseJSON.data[i].id+"'>0</span></button>\
-																		<button onclick='showComment("+parseJSON.data[i].id+");' style='height:26px;' class='btn btn-small user_type btncustom btn-respond' rel='tooltip' title='Respond' data-placement='top' data-trigger='hover'><img src='http://i.imm.io/1454a.png' width='20px' height='20px' style='position:relative; bottom:2px;'/></button>\
+																		<button onclick='clap("+parseJSON.data[i].id+");' class='btn btn-small user_type btn-inverse btn-clap' rel='tooltip' title='Clap' data-placement='top' data-trigger='hover'><img src='http://i.imm.io/1aktX.png' width='15px' height='15px' style='position:relative; bottom:2px;'/> <span style='color:yellow; font-weight:700;' class='clap"+parseJSON.data[i].id+"'>0</span></button>\
+																		<button onclick='unite();' class='btn btn-small btn-inverse' style='height:26px;'><img src='http://i.imm.io/1aqsI.png' width='15px' height='15px' /></button>\
+																		<button onclick='showComment("+parseJSON.data[i].id+");' style='height:26px;' class='btn btn-small user_type btn-inverse btn-respond' rel='tooltip' title='Respond' data-placement='top' data-trigger='hover'><img src='http://i.imm.io/1aktR.png' width='20px' height='20px' style='position:relative; bottom:2px;'/></button>\
 																	</div>\
 																</td>\
 															</tr>\
 														</table>\
 														</td>\
+														<td valign='top' width='50px;'><img src='/usr_content/pics/"+parseJSON.data[i].name.profile_pic+"_t.jpg' class='img-circle' width='40px' height='40px'>\
+															<!--<img src='/data/img/flag_red.png' style='margin-top:3px; display:block; margin-left:auto; margin-right:auto;' rel='tooltip' class='flag-post' title='Flag' data-placement='bottom' data-trigger='hover'/>-->\
+														</td>\
 													</tr>\
 												</table>\
 											</div>");
 						}
-						grabComments2(parseJSON.data[i].id);
+						//grabComments2(parseJSON.data[i].id);
 						getClaps(parseJSON.data[i].id);
 					}
 				}
@@ -398,6 +419,28 @@ function getPhotoData(id){
   });
 }
 
+function support(user_id){
+	$(document).ready(function(){
+		$.ajaxSetup({async:false});
+		var actionUrl = "actions.php?type=fan";
+		$.post(
+			actionUrl,
+			{
+				u_id: user_id
+			},
+			function(data,status){
+				var parseJSON = $.parseJSON(data);
+				if(parseJSON.status == "error"){
+					alert(parseJSON.status_msg);
+					$(".recs-feed"+user_id).fadeOut();
+				}else{
+					$(".recs-feed"+user_id).fadeOut();
+				}
+			}
+		);
+	});
+}
+
 function showComment(id){
 	$(".comment-area-show"+id).slideToggle();
 	$(".comment-area-show"+id).elastic();
@@ -405,6 +448,7 @@ function showComment(id){
 }
 
 function makeComment2(id){
+
 	if( $(".comment-area-show"+id).val() !== "" ){
 		$.ajaxSetup({async:false});
 		var actionUrl = "actions.php?type=addComment";
@@ -421,7 +465,8 @@ function makeComment2(id){
 					alert(parseJSON.status_msg);
 				}else{
 					$(".comment-area-show"+id).val("");
-					grabComments2(id);
+					//alert("makeComment");
+					//grabComments2(id);
 				}
 			}
 		);
@@ -478,7 +523,7 @@ function deleteComment(id, id2){
 	var yn = confirm("Are you sure you want to remove this comment?");
 	if(yn){
 		$.post("actions.php?type=deleteComment&r_id="+id);
-		grabComments2(id2);
+		//grabComments2(id2);
 	}
 }
 
@@ -497,7 +542,7 @@ function clap(id){
 				alert(parseJSON.status_msg);
 			}else{
 				var valueBefore = $(".clap"+id).val();
-				//$(".clap"+id).html((valueBefore+1));
+				$(".clap"+id).html((valueBefore+1));
 				getClaps(id);
 			}
 		}
@@ -537,7 +582,7 @@ function launchModal(type,id){
 
 		switchManage(0);
 		getPhotoData(id);
-		grabComments(id);
+		//grabComments(id);
 	}
 	if(type == 1){							//video
 		$(".modal-img").hide();
@@ -733,77 +778,84 @@ function loadRecs(){
 
 				var name = "";
 
-				if(parseJSON.data[i].fname != undefined){
-					name = parseJSON.data[i].fname+" "+parseJSON.data[i].lname;
-				}else if(parseJSON.data[i].tname != undefined){
-					name = parseJSON.data[i].tname;
-				}else if(parseJSON.data[i].bname != undefined){
-					name = parseJSON.data[i].bname;
-				}
+				if(parseJSON.data[i] != undefined){
+					if(parseJSON.data[i] != undefined){
+						name = parseJSON.data[i].fname+" "+parseJSON.data[i].lname;
+					}else if(parseJSON.data[i] != undefined){
+						name = parseJSON.data[i].tname;
+					}else if(parseJSON.data[i] != undefined){
+						name = parseJSON.data[i].bname;
+					}
 
 
-				var image = "";
-				//if(parseJSON.data[i].profile_pic != "")
-					image = "<img class='fix-w-img' src='http://54.243.129.126/usr_content/pics/"+parseJSON.data[i].profile_pic+"_t.jpg' />";
+					var image = "";
+					if(parseJSON.data[i] != undefined)
+						image = "<img class='fix-w-img' src='http://54.243.129.126/usr_content/pics/"+parseJSON.data[i].profile_pic+"_t.jpg' />";
 
-				$(".rec-feed-area").append("<div class='notif-i' style='width:300px;'>\
-									<table border='0' width='300px;'>\
-										<tr>\
-											<td style='padding-left:10px; font-size:12px; color:white;' valign='top'><center><img src='http://54.243.129.126/usr_content/pics/"+parseJSON.data[i].profile_pic+"_t.jpg' class='img-rounded' width='25' height='25' style='margin-right:5px;' /><a href='javascript:void();' onclick=\"switchPage('profile',[{'key':'id','val':"+parseJSON.data[i].u_id+"}]);\"><b style='color:#ffff33; color:#2727ff; font-size:16px;'>"+name+"</b></a></center><br /></b><br />\
-												<table border='0' width='100%;'>\
+					var statusArea = "";
+
+					if(parseJSON.data[i].status != ""){
+						statusArea = "<div style='padding:10px;'>\
+											<div style='padding:10px; -moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px; border:0px solid black;'>\
+												<span style='font-size:13px; color:black; font-weight:700;'>"+parseJSON.data[i].status+"</span>\
+											</div>\
+										</div>";
+					}
+					$(".rec-feed-area").append("<div class='notif-i recs-feed"+parseJSON.data[i].u_id+"' style='width:300px;'>\
+										<table border='0' width='300px;'>\
+											<tr>\
+												<td style='padding-left:10px; font-size:12px; color:white;' valign='top'><center><img src='http://54.243.129.126/usr_content/pics/"+parseJSON.data[i].profile_pic+"_t.jpg' class='img-circle' width='25px' height='25px' style='margin-right:5px;' /><a href='javascript:void();' onclick=\"switchPage('profile',[{'key':'id','val':"+parseJSON.data[i].u_id+"}]);\"><b style='color:black; font-size:16px;'>"+name+"</b></a></center><br /></b><br />\
+													<table border='0' width='100%;'>\
+														<tr>\
+															<td width='125px;'>\
+																<div style='width:125px; height:125px; overflow:hidden;'>"+image+"</div>\
+															</td>\
+															<td valign='top'>\
+																<table border='0' width='100%;'>\
+																	<tr>\
+																		<td>\
+																			<table border='0' width='100%;'>\
+																				<tr>\
+																					<td align='middle'>\
+																						<span style='font-size:14px; color:blue; font-size:15px; font-weight:700;'>Fans</span>\
+																					</td>\
+																					<td align='middle'>\
+																						<span style='font-size:14px; color:blue; font-size:15px; font-weight:700;'>Supporting</span>\
+																					</td>\
+																				</tr>\
+																				<tr>\
+																					<td align='middle'>\
+																						<span style='color:white; font-size:14px;'>"+parseJSON.data[i].fans+"</span>\
+																					</td>\
+																					<td align='middle'>\
+																						<span style='color:white; font-size:14px;'>"+parseJSON.data[i].supporters+"</span>\
+																					</td>\
+																				</tr>\
+																			</table>\
+																		</td>\
+																	</tr>\
+																	<tr>\
+																		<td>\
+																			"+statusArea+"\
+																		</td>\
+																	</tr>\
+																</table>\
+															</td>\
+														</tr>\
+													</table>\
+												<br /><br />\
+												<table border='0' width='100%'>\
 													<tr>\
-														<td width='125px;'>\
-															<div style='width:125px; height:125px; overflow:hidden;'>"+image+"</div>\
-														</td>\
-														<td valign='top'>\
-															<table border='0' width='100%;'>\
-																<tr>\
-																	<td>\
-																		<table border='0' width='100%;'>\
-																			<tr>\
-																				<td align='middle'>\
-																					<span style='font-size:14px; color:#2727ff; font-size:15px; font-weight:500;'>Fans</span>\
-																				</td>\
-																				<td align='middle'>\
-																					<span style='font-size:14px; color:#2727ff; font-size:15px; font-weight:500;'>Supporting</span>\
-																				</td>\
-																			</tr>\
-																			<tr>\
-																				<td align='middle'>\
-																					<span style='color:red; font-size:14px;'>"+parseJSON.data[i].fans+"</span>\
-																				</td>\
-																				<td align='middle'>\
-																					<span style='color:red; font-size:14px;'>"+parseJSON.data[i].supporters+"</span>\
-																				</td>\
-																			</tr>\
-																		</table>\
-																	</td>\
-																</tr>\
-																<tr>\
-																	<td>\
-																		<div style='padding:10px;'>\
-																			<div style='padding:10px; -moz-border-radius:5px; border:0px solid #000; -webkit-border-radius:5px; border-radius:5px; background-color:rgba(190,190,190,.1);'>\
-																				<span style='font-size:13px; color:#2727ff; font-weight:500;'>"+parseJSON.data[i].status+"</span>\
-																			</div>\
-																		</div>\
-																	</td>\
-																</tr>\
-															</table>\
+														<td valign='top' align='center'>\
+															<button class='btn btn-mini btnbluelight' style='color:yellow;' type='button' onclick='support("+parseJSON.data[i].u_id+");'><i class='icon-plus icon-white' style='position:relative; bottom:3px;'></i> Support</button>\
 														</td>\
 													</tr>\
 												</table>\
-											<br /><br />\
-											<table border='0' width='100%'>\
-												<tr>\
-													<td valign='top' align='center'>\
-														<button class='btn btn-mini btnbluelight' style='color:yellow;' type='button'><i class='icon-plus icon-white' style='position:relative; bottom:3px;'></i> Support</button>\
-													</td>\
-												</tr>\
-											</table>\
-											</td>\
-										</tr>\
-									</table>\
-								</div>");
+												</td>\
+											</tr>\
+										</table>\
+									</div>");
+				}
 			}
 		}
 	});
@@ -837,155 +889,188 @@ function miniSlideshow(id){
 	});
 }
 </script>
-
+<style type="text/css">
+.tabarea-tstream{
+	margin-bottom:-16px;
+}.tabarea-tstream .tab{
+	-moz-border-top-right-radius:5px;
+	-webkit-border-top-right-radius:5px;
+	border-top-right-radius:5px;
+	-moz-border-top-left-radius:5px;
+	-webkit-border-top-left-radius:5px;
+	border-top-left-radius:5px;
+	background-color:black;
+	border:1px solid black;
+	padding:5px;
+	color:white;
+	font-weight:bold;
+	cursor:pointer;
+}.tabarea-tstream .tab:hover{
+	-moz-border-top-right-radius:5px;
+	-webkit-border-top-right-radius:5px;
+	border-top-right-radius:5px;
+	-moz-border-top-left-radius:5px;
+	-webkit-border-top-left-radius:5px;
+	border-top-left-radius:5px;
+	background-color:white;
+	padding:5px;
+	color:blue;
+	border:1px solid white;
+	font-weight:bold;
+	cursor:pointer;
+}.tabarea-tstream .tab-current{
+	background-color:white;
+	color:blue;
+	border:1px solid white;
+}
+</style>
 <div class='site-content'>
-<table border="0" width="100%;" height="100%">
+<table border="0" width="100%;" height="100%" cellspacing="0" cellpadding="0">
 	<tr>
 		<td colspan="3" height="65px;"></td>
 	</tr>
 	<tr>
 		<td valign="top">
-			<table border="0" width="100%;" height="100%;">
+			<table border="0" width="100%;" height="100%;" cellpadding="0" cellspacing="0">
 				<tr>
-					<td width="28%;" style="height:30px; border-bottom:1px dashed #fbd515; background-color:#2727ff;" ><!-- background-color:#063d78; -->
-						<table border="0" style="float:left; padding-top:5px; padding-left:5px;" width="100%;">
-							<tr>
-								<td valign="center" align="left">
-									<!-- white globe: http://i.imm.io/Nxd2.png http://i.imm.io/NxaO.png  -->
-									<img src="http://i.imm.io/13XIk.png" width="40px;" height="40px;" /><b style="position:relative; top:2px; left:3px; color:white;">Recommendations</b>
-								</td>
-							</tr>
-						</table>
-					</td>
-					<td colspan="2" style="border-bottom:1px dashed #fbd515; border-left:2px solid #fbd515; /*background-color:#063d78;*/ background-color:#2727ff;/*purple #800020*/;">
-						<table border="0" style="float:right; padding-top:5px; padding-right:5px;" width="100%;">
-							<tr>
-								<td valign="center" align="left">
-									<img src="/data/img/yellow_refresh.png" width="16px;" height="16px;" onclick="repaintPostings(0);" style="cursor:pointer; margin-top:5px; margin-left:5px;" /><b style="position:relative; top:2px; left:3px; color:white; /*#ffa500 #fad416*/;">Thoughts</b>
-								</td>
-								<td valign="center" height='45px;' align="right" style="padding-right:20px; padding-left:10px;">
-									<style type='text/css'>
-									.pop-large{
-										position:fixed;
-										top:66px;
-										right:0px;
-										background-color:#2727ff; /*purple #800020*/;
-										padding-right:10px;
-										padding-left:10px;
-										z-index:1000;
-									}.ldmore{
-										background-color:#063d78;
-										padding:5px;
-										color:yellow;
-										text-align:center;
-									}
-									</style>
-									<div class='pop-large' style="height:47px;">
-										<i class='icon-remove icon-white remove-btn' onclick='condenseInput();' style='cursor:pointer; display:none;'></i>
-										<table border='0' style='position:relative; top:10px;'>
-											<tr>
-												<td valign='middle'>
-													<div class='action-icons'>
-														<a href="javascript:expandInput();" style="margin-left:10px;"><i class="icon-picture icon-white"></i></a><a href="javascript:expandInput();" style="margin-left:10px;"><i class="icon-film icon-white"></i></a><a href="javascript:expandInput();" style="margin-left:10px;"><i class="icon-edit icon-white"></i></a>
-													</div>
-												</td>
-												<td>
-													<textarea placeholder="Express yourself..." class='express-tbox post-textbox' style="resize:none; height:30px; margin-left:10px;" onfocus='expandInput();' ></textarea>
-												</td>
-												<td valign='top'>
-													<button class="btn btn-primary btncustom" style='margin-left:5px; background-color:#ffff1a;' onclick='makePosting();'><b style="color:#2727ff;">Vent</b></button>
-												</td>
-											</tr>
-											<tr>
-												<td colspan="3">
-													<div class='action-icons-real' style='display:none;'>
-														<a href="javascript:changePostExtra(0);" style="margin-left:10px;"><i class="icon-picture icon-white" ></i></a><a href="javascript:changePostExtra(2);" style="margin-left:10px;"><i class="icon-film icon-white" ></i></a><a href="javascript:changePostExtra(3);" style="margin-left:10px;"><i class="icon-edit icon-white"></i></a>
-														<div class="post-extra" style="display:none; width:260px; max-height:200px; overflow:scroll;">
-															<div class="photo" style="display:none;"></div>
-															<div class="video" style="display:none;"></div>
-															<div class="link" style="display:none;"></div>
-														</div>
-														<span style="float:left; margin-left:10px; font-size:13px; color:white; display:none;" class="selected-item">Item selected</span>
-													</div>
-												</td>
-											</tr>
-										</table>
-									</div>
-								</td>
-							</tr>
+					<td colspan="2">
+						<table border="0" width="100%;" cellpadding="0" cellspacing="0">
+							<td width="25%;" style="background-color:black; padding-top:5px;" ><!-- #2727ff; CHANGE background-color:#063d78; -->
+								<table border="0" width="100%">
+									<tr>
+										<td align="left">
+											<table border="0" class="tabarea-tstream" cellpadding="0px;">
+												<tr>
+													<td>
+														<div class="tab tab-current">Thoughtstream</div>
+													</td>
+													<td>
+														<div class="tab">Photo</div>
+													</td>
+													<!--<td>
+														<div class="tab"><img src="http://i.imm.io/1aqsI.png" style="width:23px; height:23px;"/></div>
+													</td>-->
+													<td>
+														<div class="tab">Link</div>
+													</td>
+												</tr>
+											</table>
+										</td>
+										<td align="right">
+											<!--<span style="color:yellow; border-bottom:1px dashed yellow; font-family:'Permanent Marker'; font-size:18px;"><b style="color:yellow;">Music Feed</b></span>-->
+										</td>
+									</tr>
+								</table>
+							</td>
+							<td width="50%" align="center" style="padding-top:5px; /*background-color:#063d78;*/ background-color:black;/*purple #800020*/;">
+								<!--<table border="1" style="float:right; padding-top:5px; padding-right:5px; border-color:white;" width="100%;">
+									<tr>
+										<td valign="center" align="left">
+										</td>
+										<td valign="center" height='45px;' align="right" style="padding-right:20px; padding-left:10px;">
+											<style type='text/css'>
+											.pop-large{
+												background-color:black; /*purple #800020*/;
+												padding-right:10px;
+												padding-left:10px;
+												z-index:1000;
+											}.ldmore{
+												background-color:#063d78;
+												padding:5px;
+												color:yellow;
+												text-align:center;
+											}
+											</style>
+											<div class='pop-large'>
+												<i class='icon-remove icon-white remove-btn' onclick='condenseInput();' style='cursor:pointer; display:none;'></i>
+												<table border='0' style='position:relative; top:10px;'>
+													<tr>
+														<td valign='middle'>
+
+														</td>
+														<td>
+															<textarea placeholder="Express yourself..." class='express-tbox post-textbox' style="resize:none; height:30px; margin-left:10px;" onfocus='expandInput();' ></textarea>
+														</td>
+														<td valign='top'>
+															<button class="btn btn-primary btncustom" style='margin-left:5px; background-color:#ffff1a;' onclick='makePosting();'><b style="color:#2727ff;">Vent</b></button>
+														</td>
+													</tr>
+													<tr>
+														<td colspan="3">
+															<div class='action-icons-real' style='display:none;'>
+																<a href="javascript:changePostExtra(0);" style="margin-left:10px;"><i class="icon-picture icon-white" ></i></a><a href="javascript:changePostExtra(2);" style="margin-left:10px;"><i class="icon-film icon-white" ></i></a><a href="javascript:changePostExtra(3);" style="margin-left:10px;"><i class="icon-edit icon-white"></i></a>
+																<div class="post-extra" style="display:none; width:260px; max-height:200px; overflow:scroll;">
+																	<div class="photo" style="display:none;"></div>
+																	<div class="video" style="display:none;"></div>
+																	<div class="link" style="display:none;"></div>
+																</div>
+																<span style="float:left; margin-left:10px; font-size:13px; color:white; display:none;" class="selected-item">Item selected</span>
+															</div>
+														</td>
+													</tr>
+												</table>
+											</div>
+										</td>
+									</tr>
+								</table>-->
+								<table border="0" width="100%;" style="border-color:white;">
+									<tr>
+										<td width="44%;" align="right"><img src="http://i.imm.io/1akBD.png" width="30px;" height="30px;" style="margin:5px; margin-bottom:7px;"/><input type="text" style="height:30px; float:left; position:relative; top:4px;" placeholder="Express yourself..." /></td>
+										<td width="12%" align="center">
+											<!--<table border="0" class="tabarea-tstream" cellpadding="0px;">
+												<tr>
+													<td>
+														<div class="tab">Unite</div>
+													</td>
+												</tr>
+											</table>-->
+											<button class="btn btncustomvent" style="background-color:#173aff;"><span style="color:yellow; font-weight:bold;">Vent</span></button>
+											<!--<div class="background-color:black; position:relative; top:60px;">
+												<img src="http://i.imm.io/1aqsI.png" style="width:23px; height:23px;" />
+											</div>-->
+										</td>
+										<td width="44%;" align="left"><img src="http://i.imm.io/1akFm.png" width="30px;" height="30px;" style="margin:5px; margin-bottom:7px;"/><input type="text" style="height:30px; float:right; position:relative; top:4px;" placeholder="Express yourself..." /></td>
+									</tr>
+								</table>
+							</td>
+							<td width="25%" align="right" style="background-color:black; padding-top:5px;">
+								<table border="0" width="100%">
+									<tr>
+										<td align="left">
+
+										</td>
+										<td align="right">
+											<table border="0" class="tabarea-tstream" cellpadding="0">
+												<tr>
+													<td>
+														<div class="tab tab-current">Thoughtstream</div>
+													</td>
+													<td>
+														<div class="tab">Photo</div>
+													</td>
+													<!--<td>
+														<div class="tab"><img src="http://i.imm.io/1aqsI.png" style="width:23px; height:23px;"/></div>
+													</td>-->
+													<td>
+														<div class="tab">Link</div>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</td>
 						</table>
 					</td>
 				</tr>
 				<tr>
-					<!-- PUBLIC COLUMN AREA #1 -->
-					<td width="20%;" valign="top" style='background-color:#ffff15;'>
-						<!--<div style="background-color:yellow; padding-top:5px; width:100%; padding-bottom:5px;">
-							<center><b style="position:relative; top:2px; left:3px; color:black;">Recommendations</b></center>
-							<table border="0" width="100%;" class="tab-area" style="margin-bottom:10px; display:none;">
-								<tr>
-									<td align="center">
-										<a href="#">
-											<div class="tab type1" rel="tooltip" title="Standard" data-placement="top" data-trigger="hover">
-												<img src="http://i49.tinypic.com/30bh02h.png" width="20px;" height="20px;" />
-											</div>
-										</a>
-									</td>
-									<td align="center">
-										<a href="#">
-											<div class="tab type2" rel="tooltip" title="Networks" data-placement="top" data-trigger="hover">
-												<img src="http://cdn1.iconfinder.com/data/icons/devine_icons/128/PNG/System%20and%20Internet/Network%20Setting.png" width="20px;" height="20px;" />
-												<img src="http://i47.tinypic.com/21dj0c3.png" width="20px;" height="20px;" />
-											</div>
-										</a>
-									</td>
-									<td align="center">
-										<a href="#">
-											<div class="tab type3" rel="tooltip" title="Athelete" data-placement="top" data-trigger="hover">
-												<img src="http://i46.tinypic.com/29xuhbm.png" width="20px;" height="20px;" />
-											</div>
-										</a>
-									</td>
-									<td align="center">
-										<a href="#">
-											<div class="tab type4" rel="tooltip" title="Team" data-placement="top" data-trigger="hover">
-												<img src="http://i46.tinypic.com/racknc.png" width="20px;" height="20px;" />
-											</div>
-										</a>
-									</td>
-									<td align="center">
-										<a href="#">
-											<div class="tab type5" rel="tooltip" title="Muscian" data-placement="top" data-trigger="hover">
-												<img src="http://i47.tinypic.com/2cqifj7.png" width="20px;" height="20px;" />
-											</div>
-										</a>
-									</td>
-									<td align="center">
-										<a href="#">
-											<div class="tab type6" rel="tooltip" title="Band" data-placement="top" data-trigger="hover">
-												<img src="http://i50.tinypic.com/2lic02p.gif" width="20px;" height="20px;" />
-											</div>
-										</a>
-									</td>
-									<td align="center">
-										<a href="#">
-											<div class="tab type6" rel="tooltip" title="Agent" data-placement="top" data-trigger="hover">
-												<img src="http://i50.tinypic.com/1pbdzr.gif" width="20px;" height="20px;" />
-											</div>
-										</a>
-									</td>
-								</tr>
-							</table>
-						</div>-->
-						<div class="rec-feed-area"> <!-- REC FEED -->
-						</div>
-					</td>
 					<!-- PRIVATE COLUMN AREA #1 -->
-					<td width="40%;" style="border-left:2px solid #fbd515; padding-right:10px; padding-left:10px;" valign="top">
+					<td width="50%;" style="border-left:2px solid black; padding-right:10px; padding-left:10px; background-color:white; /*#ededed*/ /*background-image:url('http://www.globaltotaloffice.com/textiles_finishes/large/DF_67_CharcoalGrey.jpg');*/" valign="top">
 						<div class='stream1'></div>
 						<div class='load-more1 ldmore'>Loading...</div>
 					</td>
 					<!-- PRIVATE COLUMN AREA #2 -->
-					<td width="40%;" style="border-left:2px solid #fbd515; padding-left:10px; padding-right:10px;" valign="top">
+					<td width="50%;" style="padding-left:10px; padding-right:10px; background-color:white; border-left:2px solid black; /*background-image:url('http://www.globaltotaloffice.com/textiles_finishes/large/DF_67_CharcoalGrey.jpg');*/" valign="top">
 						<div class='stream2'></div>
 						<div class='load-more2 ldmore'>Loading...</div>
 					</td>
@@ -1112,7 +1197,7 @@ function miniSlideshow(id){
 	font-size:12px;
 	color:#CCC;
 }.notif-i{
-	border-bottom:1px solid black;
+	border-bottom:1px solid white;
 	padding-top:3px;
 	padding-bottom:3px;
 	/*border-bottom:1px solid #CCC;*/
@@ -1233,7 +1318,6 @@ function miniSlideshow(id){
 	/*background-color:rgba(255,255,255,.4);*/
 }.ex-img img{
 	width:250px;
-	margin-left:14%;
 	margin-right:auto;
 	display:block;
 }.album-view{
@@ -1248,11 +1332,11 @@ function miniSlideshow(id){
 }.btncustom22:hover{
 	background-color:#fc5a1e;
 }.btncustom{
-	background-image: -webkit-linear-gradient(top,#ffff1a,#ffff67);
-	background-image: -moz-linear-gradient(top,#ffff1a,#ffff67);
-	background-image: -o-linear-gradient(top,#ffff1a,#ffff67);
+	background-image: -webkit-linear-gradient(top,yellow,yellow);
+	background-image: -moz-linear-gradient(top,yellow,yellow);
+	background-image: -o-linear-gradient(top,yellow,yellow);
 }.btncustom:hover{
-	background-color:#ffff1a;
+	background-color:yellow;
 }.resource-content{
 	margin-left:20px;
 }.image-comments{

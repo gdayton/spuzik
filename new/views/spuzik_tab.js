@@ -384,7 +384,7 @@
 							container.appendChild(imageView.render().el);
 							//self.$el.find(".img-holder").append(imageView.render().el);
 						}, this);
-						//self.$el.find(".img-holder").append(container);
+						self.$el.find(".img-holder").append(container);
 					}else{
 						self.$el.find(".img-holder-no").show();
 					}

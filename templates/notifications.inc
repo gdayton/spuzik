@@ -31,6 +31,14 @@ $(document).ready(function() {
 			$(".unq-3i").css("max-height",( $(window).height() - ($(".unq-3i").offset().top+12) ));
 		}
 	});
+
+	$(".thoughtstreamtt").tooltip('toggle');
+	$(".thoughtstreamtt").tooltip('hide');
+	$(".myzonett").tooltip('toggle');
+	$(".myzonett").tooltip('hide');
+	$(".zoneouttt").tooltip('toggle');
+	$(".zoneouttt").tooltip('hide');
+
 });
 
 function grabNotifications(type, className){
@@ -107,6 +115,12 @@ function grabNotifications(type, className){
 			}
 		}
 	});
+}
+
+function hideSidebars(){
+	$(".leftbar").hide();
+	$(".rightbar").hide();
+	$(".midbar").attr("width","100%");
 }
 
 function makeComment2(id){
@@ -286,16 +300,70 @@ function grabPosting(id, p_id, type){
 		<td>
 			<table border="0" width="100%;" height="100%;">
 				<tr>
-					<td width="20%;" height="100%;" valign="top" align="middle" style='background-color:#2727ff; padding-top:60px;'>
-						<a href="javascript:void(0);" onclick='switchPage("thoughtstream");'><img src="/data/img/q_mark.png" width="35px" height="35px" style="margin-top:10px;"/></a>
-						<a href="javascript:void(0);" onclick='switchPage("thoughtstream");' style="text-decoration:none;"><h3 style="text-align:center; color:#f2f200;">Thoughtstream</h3></a>
-						<div class="signup" style="overflow:auto; background-color:#fc5a1e;">
-							<i class='icon-refresh' onclick='grabNotifications("thoughtstream","unq2");' style='cursor:pointer;'></i>
+					<td class="leftbar" width="20%;" height="100%;" valign="top" align="middle" style='background-color:white; padding-top:60px;'><!-- #2727ff; CHANGE -->
+						<!--<div class="signup" style="overflow:auto;">--><!-- #fc5a1e; CHANGE -->
+							<!--<i class='icon-refresh' onclick='grabNotifications("thoughtstream","unq2");' style='cursor:pointer;'></i>
 							<b style="color:black;">Notifications</b>
 							<span class="badge badge-info unq-2" style="cursor:pointer; background-color:#2727ff; float:right;"><span style="color:yellow;">0</span></span>
 							<div class="unq-2i" style="display:none; width:100%; max-height:300px; overflow:auto;"></div>
+						</div>-->
+						<!--<div class="signup" style="overflow:auto;">--><!-- #fc5a1e; CHANGE -->
+							<!--<i class='icon-refresh' onclick='grabNotifications("thoughtstream","unq3");' style='cursor:pointer;'></i>
+							<b style="color:black;">Notifications</b>
+							<span class="badge badge-info unq-3" style="cursor:pointer; background-color:#2727ff; float:right;"><span style="color:yellow;">0</span></span>
+							<div class="unq-3i" style="display:none; width:100%; max-height:300px; overflow:auto;"></div>
+						</div>-->
+						<a href="javascript:void(0);" onclick='switchPage("profile");' class='myzonett' rel='tooltip' title='My Zone' data-placement='right' data-trigger='hover'>
+						<?php
+							$profPic = "/usr_content/pics/".$userInfo['profile_pic']."_t.jpg";
+							echo "<img class='img-circle prof_pic' src='".$profPic."' width='65px' height='65px' style='margin-top:-13px;'/>";
+						?>
+						</a>
+						<a href="javascript:void(0);" onclick='switchPage("profile");' style="text-decoration:none;"><h3 style="text-align:center; color:#173aff;">My Zone</h3></a><!-- FCDC3B --><!-- #f2f200 CHANGE -->
+						<br />
+						<a href="javascript:void(0);" onclick='switchPage("thoughtstream");' class='thoughtstreamtt' rel='tooltip' title='Thoughtstream' data-placement='right' data-trigger='hover'><img src="http://oi40.tinypic.com/sdfvdj.jpg" width="45px" height="45px" style="margin-top:-10px;"/></a><!-- /data/img/q_mark.png CHANGE --><br />
+						<a href="javascript:void(0);" onclick='switchPage("thoughtstream");' style="text-decoration:none;"><h3 style="text-align:center; color:#173aff;">My Stadium</h3></a><!-- #f2f200 CHANGE -->
+						<div style="width:100%;">
+							<a href="javascript:void(0);" onclick='hideSidebars();' class='zoneouttt' rel='tooltip' title='Zone Out' data-placement='right' data-trigger='hover'><img src="http://i41.tinypic.com/2mgplae.png" class="img-circle" width="90px" height="90px" style="margin-top:18px;"/></a><!-- http://i.imm.io/1aqsI.png http://i41.tinypic.com/2mgplae.png /data/img/q_mark.png http://i.imm.io/1aqlv.png CHANGE --><br /><br />
 						</div>
+						<a href="javascript:void(0);" onclick='hideSidebars();' class='zoneouttt' rel='tooltip' title='Zone Out' data-placement='right' data-trigger='hover'><img src="http://i.imm.io/19VTJ.png" width="55px" height="55px" style="margin-top:10px;"/></a><!-- /data/img/q_mark.png CHANGE -->
+						<a href="javascript:void(0);" onclick='hideSidebars();' style="text-decoration:none;"><h3 style="text-align:center; color:#173aff;">Zone Out</h3></a><!-- #f2f200 CHANGE -->
+
+						<a href="javascript:void(0);" onclick='switchPage("settings");'><img src="http://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/settings-24-128.png" width="35px" height="35px" style="margin-top:10px;"/></a><!-- /data/img/q_mark.png CHANGE -->
+						<a href="javascript:void(0);" onclick='switchPage("settings");' style="text-decoration:none;"><h3 style="text-align:center; color:#173aff;">Settings</h3></a>
+						<!--<table border="0" cellpadding="5">
+							<tr>
+								<td align="center">
+									<a href="javascript:void(0);" onclick='switchPage("profile");'>
+									<?php
+										$profPic = "/usr_content/pics/".$userInfo['profile_pic']."_t.jpg";
+										echo "<img class='img-circle prof_pic' src='".$profPic."' width='65px' height='65px'  style='margin-top:10px;'/>";
+									?>
+									</a>
+								</td>
+								<td align="left">
+									<a href="javascript:void(0);" onclick='switchPage("profile");' style="text-decoration:none; position:relative; top:4px;"><h3 style="color:#173aff;">My Zone</h3></a>
+								</td>
+							</tr>
+							<tr>
+								<td align="center">
+									<a href="javascript:void(0);" onclick='switchPage("thoughtstream");'><img src="http://i.imm.io/19Vdu.png" width="35px" height="35px" style="margin-top:10px;"/></a>
+								</td>
+								<td align="left">
+									<a href="javascript:void(0);" onclick='switchPage("thoughtstream");' style="text-decoration:none; position:relative; top:4px;"><h3 style="color:#173aff;">Thoughtstream</h3></a>
+								</td>
+							</tr>
+							<tr>
+								<td align="center">
+									<a href="javascript:void(0);" onclick='switchPage("settings");'><img src="http://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/settings-24-128.png" width="35px" height="35px" style="margin-top:10px;"/></a>
+								</td>
+								<td align="left">
+									<a href="javascript:void(0);" onclick='switchPage("settings");' style="text-decoration:none; position:relative; top:12px;"><h3 style="color:#173aff;">Settings</h3></a>
+								</td>
+							</tr>
+						</table>-->
 					</td>
+					<!--
 					<td width="30%;" height="100%;" valign="middle" align="left" >
 						<div class='notif-prev left-prev' style='display:none;'>
 						</div>
@@ -304,20 +372,250 @@ function grabPosting(id, p_id, type){
 						<div class='notif-prev right-prev' style='display:none;'>
 						</div>
 					</td>
-					<td width="20%;" height="100%;" valign="top" align="middle" style='background-color:#2727ff; padding-top:60px;'>
-						<a href="javascript:void(0);" onclick='switchPage("profile");'>
-						<?php
-							$profPic = "/usr_content/pics/".$userInfo['profile_pic']."_t.jpg";
-							echo "<img class='img-circle prof_pic' src='".$profPic."' width='65px' height='65px'  style='margin-top:10px;'/>";
-						?>
-						</a>
-						<a href="javascript:void(0);" onclick='switchPage("profile");' style="text-decoration:none;"><h3 style="text-align:center; color:#f2f200;">My Zone</h3></a><!-- FCDC3B -->
-						<div class="signup" style="overflow:auto; background-color:#fc5a1e;">
-							<i class='icon-refresh' onclick='grabNotifications("thoughtstream","unq3");' style='cursor:pointer;'></i>
-							<b style="color:black;">Notifications</b>
-							<span class="badge badge-info unq-3" style="cursor:pointer; background-color:#2727ff; float:right;"><span style="color:yellow;">0</span></span>
-							<div class="unq-3i" style="display:none; width:100%; max-height:300px; overflow:auto;"></div>
+					-->
+					<td class="midbar" width="60%">
+						<script>
+						$.ajax({
+							url: "actions.php?type=getPhotos&uid="+logId,
+							success: function(data){
+								var parseJSON = $.parseJSON(data);
+								if(parseJSON.data != undefined){
+									parseJSON.data.shuffle();
+									$(".init-image").attr("src","/usr_content/pics/"+parseJSON.data[0]+"_s.jpg");
+								}
+
+								if(parseJSON.status != "error"){
+									if(parseJSON.data != undefined){
+										for(var i = 1;i < parseJSON.data.length;i++){
+											$(".img-cont").append("<img class='fix-w-img' src='/usr_content/pics/"+parseJSON.data[i]+"_s.jpg' />");
+										}
+										$(".photo-ctr").html(parseJSON.data.length);
+
+										$('.img-cont').cycle({
+											fx: 'scrollUp',
+											timeout: 5000
+										});
+									}
+								}else{
+									alert("There was an error obtaining your photos.");
+								}
+							}
+						});
+
+						function pause(){
+							$('.img-cont').cycle('pause');
+							$('.img-cont').attr('onclick','play()');
+						}
+
+						function play(){
+							$('.img-cont').cycle('resume');
+							$('.img-cont').attr('onclick','pause()');
+						}
+						</script>
+						<div class="img-cont" style="width:100%;" onclick="pause()">
+							<img class="init-image fix-w-img" src="" />
 						</div>
+					</td>
+					<style type="text/css">
+					.notifications-container{
+						width:100%;
+					}.notifications-container img{
+						width:30px;
+						height:30px;
+						float:left;
+					}.notifications-container .identity{
+						float:left;
+						padding-left:5px;
+					}.notifications-container .info{
+						color:black;
+						font-size:13px;
+					}.notifications-container .info .name{
+						color:blue;
+					}.notifications-container .date{
+						font-size:11px;
+						color:grey;
+					}.notifications-momma{
+						background-color:white;
+						-moz-border-radius:5px;
+						-webkit-border-radius:5px;
+						border-radius:5px;
+						padding:5px;
+						height:100%;
+						overflow:scroll;
+					}
+					</style>
+					<td class="rightbar" width="20%;" height="100%;" valign="top" align="middle" style='background-color:white;'><!-- #2727ff; CHANGE -->
+						<table border="0" width="100%;" height="100%;">
+							<tr>
+								<td height="60%;" valign="top">
+									<div class="notifications-momma">
+										<h5 style="text-align:center; color:black;">Notifications</h5>
+										<div class="notifications-container">
+											<table border="0">
+												<tr>
+													<td width="31px;"><img src="http://54.243.129.126/usr_content/pics/50f8a372b1bfe_t.jpg" class="img-circle"/></td>
+													<td>
+														<div class="identity">
+															<span class="info"><span class="name">Glenn Dayton</span> commented on your post.</span><br />
+															<span class="date">3 hours ago</span>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</div>
+										<div class="notifications-container">
+											<table border="0">
+												<tr>
+													<td width="31px;"><img src="http://54.243.129.126/usr_content/pics/514bd1c5ba8c6_t.jpg" class="img-circle"/></td>
+													<td>
+														<div class="identity">
+															<span class="info"><span class="name">Jake Cohen</span> clapped your photo.</span><br />
+															<span class="date">2 hours ago</span>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</div>
+										<div class="notifications-container">
+											<table border="0">
+												<tr>
+													<td width="31px;"><img src="http://54.243.129.126/usr_content/pics/514bd1c5ba8c6_t.jpg" class="img-circle"/></td>
+													<td>
+														<div class="identity">
+															<span class="info"><span class="name">Jake Cohen</span> clapped your photo.</span><br />
+															<span class="date">2 hours ago</span>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</div>
+										<div class="notifications-container">
+											<table border="0">
+												<tr>
+													<td width="31px;"><img src="http://54.243.129.126/usr_content/pics/514bd1c5ba8c6_t.jpg" class="img-circle"/></td>
+													<td>
+														<div class="identity">
+															<span class="info"><span class="name">Jake Cohen</span> clapped your photo.</span><br />
+															<span class="date">2 hours ago</span>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</div>
+										<div class="notifications-container">
+											<table border="0">
+												<tr>
+													<td width="31px;"><img src="http://54.243.129.126/usr_content/pics/514bd1c5ba8c6_t.jpg" class="img-circle"/></td>
+													<td>
+														<div class="identity">
+															<span class="info"><span class="name">Jake Cohen</span> clapped your photo.</span><br />
+															<span class="date">2 hours ago</span>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</div>
+										<div class="notifications-container">
+											<table border="0">
+												<tr>
+													<td width="31px;"><img src="http://54.243.129.126/usr_content/pics/514bd1c5ba8c6_t.jpg" class="img-circle"/></td>
+													<td>
+														<div class="identity">
+															<span class="info"><span class="name">Jake Cohen</span> clapped your photo.</span><br />
+															<span class="date">2 hours ago</span>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</div>
+										<div class="notifications-container">
+											<table border="0">
+												<tr>
+													<td width="31px;"><img src="http://54.243.129.126/usr_content/pics/514bd1c5ba8c6_t.jpg" class="img-circle"/></td>
+													<td>
+														<div class="identity">
+															<span class="info"><span class="name">Jake Cohen</span> clapped your photo.</span><br />
+															<span class="date">2 hours ago</span>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</div>
+										<div class="notifications-container">
+											<table border="0">
+												<tr>
+													<td width="31px;"><img src="http://54.243.129.126/usr_content/pics/514bd1c5ba8c6_t.jpg" class="img-circle"/></td>
+													<td>
+														<div class="identity">
+															<span class="info"><span class="name">Jake Cohen</span> clapped your photo.</span><br />
+															<span class="date">2 hours ago</span>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</div>
+										<div class="notifications-container">
+											<table border="0">
+												<tr>
+													<td width="31px;"><img src="http://54.243.129.126/usr_content/pics/514bd1c5ba8c6_t.jpg" class="img-circle"/></td>
+													<td>
+														<div class="identity">
+															<span class="info"><span class="name">Jake Cohen</span> clapped your photo.</span><br />
+															<span class="date">2 hours ago</span>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</div>
+										<div class="notifications-container">
+											<table border="0">
+												<tr>
+													<td width="31px;"><img src="http://54.243.129.126/usr_content/pics/514bd1c5ba8c6_t.jpg" class="img-circle"/></td>
+													<td>
+														<div class="identity">
+															<span class="info"><span class="name">Jake Cohen</span> clapped your photo.</span><br />
+															<span class="date">2 hours ago</span>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</div>
+										<div class="notifications-container">
+											<table border="0">
+												<tr>
+													<td width="31px;"><img src="http://54.243.129.126/usr_content/pics/514bd1c5ba8c6_t.jpg" class="img-circle"/></td>
+													<td>
+														<div class="identity">
+															<span class="info"><span class="name">Jake Cohen</span> clapped your photo.</span><br />
+															<span class="date">2 hours ago</span>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td height="40%;" valign="top">
+									<table border="0">
+										<tr>
+											<td width="41px;"><img src="http://54.243.129.126/usr_content/pics/514bd1c5ba8c6_t.jpg" class="img-circle" width="40px;" height="40px;"/></td>
+											<td>
+												<span style="color:grey; font-size:12px; float:right; padding-right:3px;">3 hours ago</span>
+												<b style="color:blue; margin-left:5px;">Jake Cohen</b>
+											</td>
+										</tr>
+										<tr>
+											<td colspan="2" style="color:black; padding:10px 15px 15px 15px; font-size:13px;">
+												<img src="http://www.myrtlebeachwebdesign.com/blog/uploaded_images/beachhouse-781562.gif" />
+												Here is some verbiage of the most recent posting. This is the text that will appear with a notification preview.
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
 					</td>
 				</tr>
 			</table>

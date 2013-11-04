@@ -9,6 +9,7 @@ $u = new User();
 $userInfo = $u->userInfo($u_id);
 ?>
 <script>
+var ptype = 0; //default
 function popDates(){
 	$(".popDates").datepicker({ dateFormat: 'mm/dd/yy' });
 }
@@ -19,8 +20,66 @@ function popDates(){
 $(window).ready(function(){
 	setTimeout(function(){
 		init();
+		$(".tab-area a").css("color","#173aff");
 	},10);
+	//setTimeout(function(){ createUploader() },30);
 });
+
+/*var fileId = 0;
+$(document).ready(function(){
+	$(function() {
+		var data = {"fileType":['image/png','image/jpg','image/jpeg','image/gif']};
+		$('#file_upload').uploadifive({
+			'auto'         : true,
+			'fileType'	   : data.fileType,
+			'queueID'      : 'post-queue',
+			'uploadScript' : 'uploadifive.php',
+			'onUploadComplete' : function(file, data) {
+				var parseJSON = $.parseJSON(data);
+
+				if(parseJSON.status == "success"){
+					$("#uploadifive-file_upload-file-"+fileId).attr("photo-id",parseJSON.photo_id);
+					$("#uploadifive-file_upload-file-"+fileId).append("<img src='usr_content/pics/"+parseJSON.photo_id+"_t.jpg' width='100%;' height='100%;'/>");
+					$("#uploadifive-file_upload-file-"+fileId).append("<div style='margin:5px;'><textarea placeholder='Description...' style='width:100%;' class='"+parseJSON.photo_id+"-textbox'></textarea><span class='"+parseJSON.photo_id+"-saved label label-success' style='display:none;'>Saved</span><button type='button' class='btn btn-small btncustom' style='float:right;' onclick=\"addDescription('"+parseJSON.photo_id+"');\">Save</button></div>");
+				}
+				//grab photo and credentials associated w/ photo
+				fileId++;
+			}
+		});
+	});
+
+	if(user_id == logId){
+		$(".edit-res").show();
+	}
+});*/
+
+$(document).ready(function(){
+	$(function() {
+		var data = {"fileType":['image/png','image/jpg','image/jpeg','image/gif']};
+		$('#post-file-upload').uploadifive({
+			'auto'         : true,
+			'fileType'	   : data.fileType,
+			'queueID'      : 'post-queue',
+			'uploadScript' : 'uploadifive.php',
+			'onUploadComplete' : function(file, data) {
+				var parseJSON = $.parseJSON(data);
+
+				if(parseJSON.status == "success"){
+					$("#uploadifive-file_upload-file-"+fileId).attr("photo-id",parseJSON.photo_id);
+					$("#uploadifive-file_upload-file-"+fileId).append("<img src='usr_content/pics/"+parseJSON.photo_id+"_t.jpg' width='100%;' height='100%;'/>");
+				}
+				//grab photo and credentials associated w/ photo
+				fileId++;
+			}
+		});
+	});
+	//setTimeout(createUploader(), 500);
+});
+
+function changePType(pt){
+	ptype = pt;
+	repaintPostings(0);
+}
 
 function init(){
 	var lineupArray = [];
@@ -136,7 +195,8 @@ function init(){
 
 					$('.img-cont').cycle({
 						fx: 'fade',
-						timeout: 20
+						//timeout: 2000,
+						speed:   300
 					});
 				}
 			}else{
@@ -160,7 +220,7 @@ function init(){
 	//load first tab as default
 	<?php $fI = $tabContent[0]['tab_script']; ?>
 	if(!window.location.hash){
-		$(".content-area").load("tab_templates/tab_me_standard.inc",function(){
+		$(".content-area").load("tab_templates/tab_mylinks_standard.inc",function(){
 			$(".loading-area-top").hide();
 		});
 	}else{
@@ -171,23 +231,26 @@ function init(){
 	}
 
 	$(".comment-tbox").elastic();
-	setInterval(function(){
+
+	//RESTORE LATER
+	/*setInterval(function(){
 		chatAlerts();
-	},1000);
+	},1000);*/
 
 	$(window).scroll(function(){
 		if($(window).scrollTop() == $(document).height() - $(window).height()){
 			loadMoreContent();
+			//$(".link-view").css("background-color","yellow");
+			$(".link-view a").css("color","#2727ff");
 		}
 	});
 
-
 	//wait for the area to load
-	//setTimeout(function(){
+	setTimeout(function(){
 		// --==(( RENABLE THE LOADING HERE  ))==--
-		//repaintPostings(0);
+		repaintPostings(0);
 		drawLineup();
-	//},10);
+	},10);
 }
 
 /*
@@ -642,7 +705,7 @@ function addLineup(){
 	if($(".fav-text").val() != ""){
 		var text = $(".fav-text").val();
 		var font = Math.floor(Math.random()*2);
-		var color = Math.floor(Math.random()*5);
+		var color = Math.floor(Math.random()*7);
 		$(".fav-text").val("");
 		$(".fav-text").select();
 		$(document).ready(function(){
@@ -654,7 +717,7 @@ function addLineup(){
 					action: "add",
 					item: text,
 					font_id: font,
-					color_id: color,
+					a_id: color,
 					position_id: (lineupArray.length+1)
 				},
 				function(data,status){
@@ -684,8 +747,10 @@ function randomFonts(){
 }
 
 function drawLineup(){
-	var fontArray = ["Molle","Diplomata SC"];
-	var colorArray = ["#ff4d4d","#00ff00","yellow","orange","#cd00cd"];
+	//var fontArray = ["Molle","Diplomata SC"];
+	var fontArray = ["Helvetica","Helvetica"];
+	//var colorArray = ["white","#ff1a1a","#00ff00","yellow","orange","#cd00cd"];
+	var colorArray = ["#72bcd4","orange","red","#cd00cd","#32cd32","yellow","white","#33ffff"];
 	//fetches fresh lineup from DB
 	grabLineup();
 	var display = ((user_id == logId) ? "show" : "none" );
@@ -694,18 +759,26 @@ function drawLineup(){
 	for(var i = 0;i < lineupArray.length;i++){
 		if(i != 0){
 			$(".lineup-list").append("<li class='lineup-item ui-state-default' lid='"+i+"'>\
-				<div style='float:right;'><a href='javascript:removeLineup("+i+");' style='display:"+display+";'><img src='/data/img/trash.png'></img></a></div>\
-				<div style='width:30px; float:left;'><span style='color:#ffff00; margin-right:15px;'>"+i+"</span></div>\
+				<div style='float:right;'><a href='javascript:removeLineup("+i+");' style='display:"+display+";'><img style='display:none; margin-right:3px;' class='trash-icon' src='/data/img/trash.png'></img></a></div>\
+				<div style='width:30px; float:left;'><span style='color:yellow; margin-right:15px; margin-left:10px;'>"+i+"</span></div>\
 				<span style='color:"+colorArray[lineupArray[i].color_id]+"; font-family:"+fontArray[lineupArray[i].font_id]+", cursive;'>"+lineupArray[i].item+"</span>\
 			</li>");
 		}else{ //render with the cup
 			$(".lineup-list").append("<li class='lineup-item ui-state-default' lid='"+i+"'>\
-				<div style='float:right'><a href='javascript:removeLineup("+i+");' style='display:"+display+";'><img src='/data/img/trash.png'></img></a></div>\
-				<div style='width:30px; float:left;'><img style='margin-right:15px;' src='/data/img/mini_trophy.png' /></div>\
+				<div style='float:right'><a href='javascript:removeLineup("+i+");' style='display:"+display+";'><img style='display:none; margin-right:3px;' class='trash-icon' src='/data/img/trash.png'></img></a></div>\
+				<div style='width:30px; float:left;'><img style=' margin-right:15px; margin-left:10px;' src='http://i.imm.io/1dzsx.png' /></div><!-- -->\
 				<span style='color:"+colorArray[lineupArray[i].color_id]+"; font-family:"+fontArray[lineupArray[i].font_id]+", cursive;'>"+lineupArray[i].item+"</span>\
 			</li>");
 		}
 	}
+
+	$(".lineup-item").mouseenter(function(){
+		$(this).find(".trash-icon").show(); //$("this .trash-icon").show();
+		$(this).css("background-color","#373737");
+	}).mouseleave(function(){
+		$(this).find(".trash-icon").hide();
+		$(this).css("background-color","black");
+	});
 }
 
 function removeLineup(pos){
@@ -824,9 +897,11 @@ function makePosting(){
 	//Figure out type and extra info with it.
 	var postingType = 0;
 	var postingAdd = 0;
+
 	$(document).ready(function(){
 		$.ajaxSetup({async:false});
 		var actionUrl = "actions.php?type=addPosting";
+
 		$.post(
 			actionUrl,
 			{
@@ -841,17 +916,43 @@ function makePosting(){
 				if(parseJSON.status == "error"){
 					alert(parseJSON.status_msg);
 				}else{
+					$(".pick-cat").attr("post-id",parseJSON.data);
 					//Add posting to post list
-					$(".post-textbox").val("");
-					repaintPostings(0);
-					contId = "";
-					contType = 0;
-					$(".post-extra").slideUp("slow");
-					$(".post-extra-remove").hide();
+					$(".post-adder").hide("");
+					$(".pick-cat").show();
 				}
 			}
 		);
 	});
+}
+
+function makePostingCats(category){
+	$.ajaxSetup({async:false});
+	var actionUrl = "actions.php?type=addPostingCategory";
+	$.post(
+		actionUrl,
+		{
+			post_id: $(".pick-cat").attr("post-id"),
+			cat: category,
+			cat_b: 0
+		},
+		function(data,status){
+			var parseJSON = $.parseJSON(data);
+			if(parseJSON.status == "error"){
+				alert(parseJSON.status_msg);
+			}else{
+				$(".post-adder").show();
+				$(".pick-cat").hide();
+				$(".post-textbox").val("");
+				repaintPostings(0);
+				changePostExtra(-1);
+				contId = "";
+				contType = 0;
+				$(".post-extra").slideUp("slow");
+				$(".post-extra-remove").hide();
+			}
+		}
+	);
 }
 
 function removePosting(p_id){
@@ -864,7 +965,7 @@ function removePosting(p_id){
 
 function repaintPostings(p_id){ //p_id is the page id/ infinite scroll page that we're on
 	$.ajax({
-		url: "actions.php?type=getProfilePostings&p_id="+p_id+"&u_id="+user_id,
+		url: "actions.php?type=getProfilePostings&p_id="+p_id+"&u_id="+user_id+"&ptype="+ptype,
 		success: function(data){
 			var parseJSON = $.parseJSON(data);
 			pageMAX = parseJSON.amt;
@@ -904,24 +1005,33 @@ function repaintPostings(p_id){ //p_id is the page id/ infinite scroll page that
 									}
 								});
 						}
+
+						var removeX = "";
+
+						if(parseJSON.data[i].name.u_id == logId){
+							removeX = "<div style='float:right;'><i class='icon-remove' onclick='removePosting("+parseJSON.data[i].id+")' rel='tooltip' title='Remove' data-placement='left' data-trigger='hover' style='cursor:pointer;'></i></div>";
+						}else{
+							removeX = "";
+						}
+
 						$(".feed-area").append("<!--<div style='position:relative; top:50px; font-size:50px; font-weight:bold; color:white;'>"+i+"("+parseJSON.data[i].id+")</div>--><div class='notif-i'>\
 										<table border='0' width='100%'>\
 											<tr>\
-												<td valign='top' width='40px;'><img src='/usr_content/pics/"+parseJSON.data[i].name.profile_pic+"_t.jpg' class='img-rounded' width='40px' height='40px'><img src='/data/img/flag_red.png' style='margin-top:3px; display:block; margin-left:auto; margin-right:auto;' rel='tooltip' class='flag-post' title='Flag' data-placement='bottom' data-trigger='hover'/></td>\
-												<td style='padding-left:10px; font-size:12px; color:white;' valign='top'><div style='float:right;'><img src='/data/img/remove.png' onclick='removePosting("+parseJSON.data[i].id+")' rel='tooltip' title='Remove' data-placement='left' data-trigger='hover' style='width:12px; height:12px;'/></div><b style='color:#ffff00;'><a  style='color:#ffff33;' href='/?p=profile&id="+parseJSON.data[i].name.u_id+"'>"+((parseJSON.data[i].name.fname != undefined) ? parseJSON.data[i].name.fname : "")+""+((parseJSON.data[i].name.bname != undefined) ? parseJSON.data[i].name.bname : "")+""+((parseJSON.data[i].name.tname != undefined) ? parseJSON.data[i].name.tname : "")+" "+((parseJSON.data[i].name.lname != undefined) ? parseJSON.data[i].name.lname : "")+"</a></b>\
-												<div class='text'>"+parseJSON.data[i].text+"\
+												<td valign='top' width='40px;'><img src='/usr_content/pics/"+parseJSON.data[i].name.profile_pic+"_t.jpg' class='img-rounded' width='40px' height='40px'><img src='/data/img/flag_red.png' style='margin-top:3px; display:block; margin-left:auto; margin-right:auto; position:relative; bottom:0;' rel='tooltip' class='flag-post' title='Flag' data-placement='bottom' data-trigger='hover'/></td>\
+												<td style='padding-left:10px; font-size:12px; color:white;' valign='top'>"+removeX+"<b style='color:#ffff00;'><a  style='color:blue;' href='/?p=profile&id="+parseJSON.data[i].name.u_id+"'>"+((parseJSON.data[i].name.fname != undefined) ? parseJSON.data[i].name.fname : "")+""+((parseJSON.data[i].name.bname != undefined) ? parseJSON.data[i].name.bname : "")+""+((parseJSON.data[i].name.tname != undefined) ? parseJSON.data[i].name.tname : "")+" "+((parseJSON.data[i].name.lname != undefined) ? parseJSON.data[i].name.lname : "")+"</a></b>\
+												<div class='text' style='color:black;'>"+parseJSON.data[i].text+"\
 													"+xtra+"\
 												</div>\
 												<table border='0' width='100%'>\
 													<tr>\
-														<td valign='top'>\
+														<!--<td valign='top'>\
 															<div class='comment' style='color:#ffff00;'><div><span class='comment"+parseJSON.data[i].id+"'></span> <span style='display:none;' class='comment-hidden"+parseJSON.data[i].id+"'></span></div><a class='comment-load"+parseJSON.data[i].id+"' style='display:none;' href='javascript:loadMore("+parseJSON.data[i].id+");'></a><textarea class='comment-area-show"+parseJSON.data[i].id+"' type='text' placeholder='Comment...' style='resize:none; display:none; height:30px; font-size:12px; width:100%; margin-top:3px;' /></textarea><button class='btn btn-mini btncustom comment-area-show-button"+parseJSON.data[i].id+"' style='color:black; float:right; display:none;' onclick='makeComment2("+parseJSON.data[i].id+");'>Comment</button></span>\
-														</td>\
-														<td valign='bottom' align='right'>\
+														</td>-->\
+														<td valign='bottom' align='middle'>\
 															<span style='font-size:12px;'>"+parseJSON.data[i].date+" ago</span>\
 															<div class='btn-group'>\
-																<button onclick='clap("+parseJSON.data[i].id+");' class='btn btn-small user_type btncustom22 btn-clap' rel='tooltip' style='background-color:#fc5a1e;' title='Clap' data-placement='top' data-trigger='hover'><img src='/data/img/clap_icon.gif' width='15px' height='15px' style='position:relative; bottom:2px;'/> <span style='color:black;' class='clap"+parseJSON.data[i].id+"'>0</span></button>\
-																<button onclick='showComment("+parseJSON.data[i].id+");' style='height:26px; background-color:#fc5a1e;' class='btn btn-small user_type btncustom22 btn-respond' rel='tooltip' title='Respond' data-placement='top' data-trigger='hover'><i class='icon-comment'></i></button>\
+																<button onclick='clap("+parseJSON.data[i].id+");' class='btn btn-small user_type btncustom btn-clap' rel='tooltip' title='Clap' data-placement='top' data-trigger='hover'><img src='http://i.imm.io/14rOO.png' width='15px' height='15px' style='position:relative; bottom:2px;'/> <span style='color:#2727ff; font-weight:700;' class='clap"+parseJSON.data[i].id+"'>0</span></button>\
+																<button onclick='showComment("+parseJSON.data[i].id+");' style='height:26px;' class='btn btn-small user_type btncustom btn-respond' rel='tooltip' title='Respond' data-placement='top' data-trigger='hover'><img src='http://i.imm.io/14rOG.png' width='20px' height='20px' style='position:relative; bottom:2px;'/></button>\
 															</div>\
 														</td>\
 													</tr>\
@@ -994,6 +1104,80 @@ function changePostExtra(num){
 var contId = "";
 var contType = 0;
 
+function getURLPhoto(){
+	$.ajax({
+		url: "uploadifive.php?url="+$(".photo-url").val(),
+		success: function(data){
+			var parseJSON = $.parseJSON(data);
+			if(parseJSON.status != "error"){
+				if(parseJSON.data != undefined){
+					setContent(parseJSON.data,1);
+					$(".post-extra").hide();
+					$(".post-extra-remove").hide();
+					$(".photo-url").val("");
+				}
+			}else{
+				alert("There was an error posting your photo from the given URL.");
+			}
+		}
+  });
+}
+
+function submitLinkPosting(){
+	$(document).ready(function(){
+		if( ($(".submitLinkTitle").val() != "") && ($(".submitLinkURL").val() != "") ){
+			$.ajaxSetup({async:false});
+			var actionUrl = "actions.php?type=addLink";
+			$.post(
+				actionUrl,
+				{
+					link: $(".submitLinkTitle").val(),
+					link_content: $(".submitLinkURL").val()
+				},
+				function(data,status){
+					var parseJSON = $.parseJSON(data);
+					if(parseJSON.status != "error"){
+						setContent(parseJSON.data,3);
+					}else{
+						if(parseJSON.status_msg != "")
+							alert(parseJSON.status_msg);
+						alert("Spuzik was not able to add your link.");
+					}
+				}
+			);
+		}else{
+			alert("You must fill out all fields.");
+		}
+	});
+}
+
+function createUploader() {
+var uploader = new qq.FineUploader({
+  element: document.getElementById('fine-uploader'),
+  request: {
+	endpoint: 'uploadifive.php'
+  },
+  text: {
+	uploadButton: '<div><i class="icon-upload icon-white"></i> Upload Photo</div>',
+	dragZone: 'Drag photo here.'
+  },
+  validation: {
+  	itemLimit: 1,
+  	allowedExtensions: ['jpeg', 'jpg', 'gif', 'png']
+  },
+  template: '<div class="qq-uploader" width="100%;">' +
+			  '<pre class="qq-upload-drop-area" width="100%;"><span>{dragZoneText}</span></pre>' +
+			  '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div><br />' +
+			  '<span class="qq-drop-processing"><span>{dropProcessingText}</span><span class="qq-drop-processing-spinner"></span></span>' +
+			  '<div style="width:215px;"><ul class="qq-upload-list" style="margin-top: 10px; list-style:none; color:black;"></ul></div>' +
+			'</div>',
+  classes: {
+	success: 'alert alert-success',
+	fail: 'alert alert-error'
+  }
+});
+}
+
 //photos
 function get0(){
 	$.ajax({
@@ -1003,6 +1187,22 @@ function get0(){
 			if(parseJSON.status != "error"){
 				if(parseJSON.data != undefined){
 					$(".photo").empty();
+					$(".photo").append("<table border='0' cellpadding='0' cellspacing='0' width='100%;'>\
+						<tr>\
+							<td width='50%;'><span style='color:black; text-size:16px; font-weight:bold;'>Upload photo</span></td>\
+							<td width='50%;'><span style='color:black; text-size:16px; font-weight:bold;'>Grab photo</span></td>\
+						</tr>\
+						<tr>\
+							<td>\
+								<div id='fine-uploader'></div>\
+							</td>\
+							<td valign='top'>\
+								<input type='text' class='photo-url' placeholder='Photo URL...' style='height:25px; margin-top:5px;' /><button class='btn btn-small btn-primary' style='position:relative; bottom:3px; left:2px;' onclick='getURLPhoto();'><span style='color:yellow;'>Get photo</span></button>\
+							</td>\
+						</tr>\
+					</table>\
+					<span style='color:black; font-size:16px; font-weight:bold;'>Choose from existing...</span><br />");
+
 					for(var i = 0;i < parseJSON.data.length;i++){
 						var data_disp = "\'"+parseJSON.data[i]+"\'";
 						$(".photo").append("<a href=\"javascript:setContent("+data_disp+",1);\"><img src='/usr_content/pics/"+parseJSON.data[i]+"_t.jpg' width='75px' /></a>");
@@ -1014,6 +1214,7 @@ function get0(){
 			}
 		}
   });
+  createUploader();
 }
 
 //videos
@@ -1046,6 +1247,20 @@ function get3(){
 				var parseJSON = $.parseJSON(data);
 				if(parseJSON.length > 0){
 					$(".post-extra .link").empty();
+					$(".post-extra .link").append("<table border='0'>\
+						<tr>\
+							<td colspan='2'><span style='color:black; text-size:16px; font-weight:bold;'>Create new link</span></td>\
+						</tr>\
+						<tr>\
+							<td><input type='text' class='submitLinkTitle' style='height:28px;' placeholder='Link title...' /></td>\
+							<td></td>\
+						</tr>\
+						<tr>\
+							<td><input type='text' class='submitLinkURL' style='height:28px;' placeholder='Link URL...' /></td>\
+							<td align='left'><button class='btn btn-primary btn-small' onclick='submitLinkPosting();' style='position:relative; bottom:4px;'><span style='color:yellow;'>Create Link</span></button></td>\
+						</tr>\
+					</table>\
+					<span style='color:black; font-size:16px; font-weight:bold;'>Choose from existing...</span><br />");
 					for(var i = 0;i < parseJSON.length;i++){
 						var data_disp = "\'"+parseJSON[i].id+"\'";
 						$(".post-extra .link").append("<span style='color:black; text-decoration:underline; cursor:pointer;' onclick=\"setContent("+data_disp+",3);\">"+parseJSON[i].link+"</span><a target='ext' style='font-size:13px; margin-left:20px; font-weight:450; color:#156ed4;' href="+parseJSON[i].link_content+">Test Link</a><br />");
@@ -1056,10 +1271,63 @@ function get3(){
 	});
 }
 
+function getLikePeople(){
+	$(".feed-area").html("");
+	$.ajax({
+		url: "actions.php?type=grabLikeUsers",
+		success: function(data){
+			var parseJSON = $.parseJSON(data);
+			if(parseJSON.status != "error"){
+				if(parseJSON.data != undefined){
+					for(var i = 0;i < parseJSON.data.length;i++){
+						$(".feed-area").append("<div class='notif-i'>\
+							<table border='0' width='100%;'>\
+								<tr>\
+									<td rowspan='3' width='60px;' valign='top'><img class='img-circle' style='width:50px; height:50px;'src='http://54.243.129.126/usr_content/pics/"+parseJSON.data[i][0].profile_pic+"_t.jpg' /></td>\
+									<td><a style='color:blue; font-size:14px; font-weight:bold;' href='/?p=profile&u_id="+parseJSON.data[i][0].u_id+"'>"+parseJSON.data[i][0].fname+" "+parseJSON.data[i][0].lname+"</a></td>\
+								</tr>\
+								<tr>\
+									<td style='padding:10px;'>\
+										<span style='color:black; font-size:14px;'>\
+										<i onclick='javascript:changeID([\""+parseJSON.data[i][2][0].y_id+"\",\""+parseJSON.data[i][2][0].name+"\",\""+parseJSON.data[i][2][0].album+"\",\""+parseJSON.data[i][2][0].artist+"\"])' class='icon-play' style='cursor:pointer;'></i></a>\
+										"+parseJSON.data[i][2][0].name+"<br />\
+										<i style='color:black;'>"+parseJSON.data[i][2][0].artist+"</i></span>\
+									</td>\
+								</tr>\
+								<tr>\
+									<td><span style='color:black; font-size:14px;'><img src='http://i.imm.io/1daFj.png' width='16px;' height='16px;' style='position:relative; bottom:1px; right:2px;'/>Suggested to you because of "+parseJSON.data[i][1]+"</span></td>\
+								</tr>\
+							</table>\
+						</div>");
+					}
+				}
+			}else{
+				alert("There was an error grabbing your reccomendations.");
+			}
+		}
+  });
+}
+
 function setContent(cId,type){
 	contId = cId;
 	contType = type;
 	$(".selected-item").show();
+	if(type == 1){ 			//photo asset
+		$(".selected-item img").attr("src","http://54.243.129.126/usr_content/pics/"+cId+"_t.jpg");
+	}else if(type == 3){	//link asset
+		//get from database the link
+		$.ajax({
+			url: "actions.php?type=getLink&l_id="+cId,
+			success: function(data){
+				var parseJSON = $.parseJSON(data);
+				$(".selected-item .link").show();
+				$(".selected-item img").hide();
+				$(".selected-item .link").html("<span style='color:blue; font-size:16px; font-weight:bold; position:relative; bottom:15px; left:16px; float:left;'>"+parseJSON.data[0].link+"</span>");
+			}
+		});
+	}
+	$(".post-extra").hide();
+	$(".post-extra-remove").hide();
 }
 
 function addAppend(type,id){
@@ -1081,26 +1349,286 @@ function addAppend(type,id){
 }
 
 var user_id = <?php echo $u_id; ?>;
+<?php
+$u2 = new User();
+$userInfo2 = $u->userInfo($u_id);
+?>
+var profileSongID = <?php echo $userInfo2['profile_music'].";"; ?>
 var logId = <?php echo $_SESSION['user_id'].";"; ?>
 </script>
 <div class='site-content'>
-<table border="1" width="100%;" height="100%" style="border-color:yellow;">
+<table border="0" width="100%;" height="100%" cellpadding="0" cellspacing="0">
 	<tr>
 		<td colspan="3" height="65px;"></td>
 	</tr>
 	<tr>
-		<td style="color:white;" valign="top">
-			<table border="0" cellpadding="3" width="250px;">
+		<td width="35%;" valign="top" class="feed" style="border-right:1px solid black;"><!-- #fc5a1e -->
+			<div class="post-input" style="background:white; /* background-image:url('http://i44.tinypic.com/35ir4g7.png'); */ position:relative;">
+				<div style='padding:5px;'>
+					<div class='pick-cat' style='padding:10px; display:none;'>
+						<span style='color:black; font-size:13px;'>What is this posting about?</span><br />
+						<a style='color:blue; font-size:13px;' href='#' onclick='makePostingCats(1);'><img src='http://i.imm.io/1dbuU.png' width='20px;' height='20px;' />Sports &raquo;</a> <a style='color:blue; font-size:13px;' onclick='makePostingCats(2);' href='#'><img src='http://i.imm.io/1dbvx.png' width='20px;' height='20px;' />Music &raquo;</a>
+					</div>
+					<table class='post-adder' border="0" width="100%">
+						<tr>
+							<td><textarea style="width:100%; resize:none; border:1px solid black;" placeholder="Express yourself..." class="post-textbox"></textarea></td>
+						</tr>
+						<tr>
+							<td>
+								<div class='selected-item' style='display:none;'>
+									<i class='icon-remove' onclick='changePostExtra(-1);' style='cursor:pointer;'></i>
+									<img src='' width='60px;' />
+									<div class='link' style='display:none;'></div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+							<!--<button class="btny btn-primary" style="float:right;" onclick="makePosting();"><b style="color:blue; /* #0769d7 #FCDC3B */">Vent</b></button>-->
+							<button class="btn btncustomblack" style="float:right; background-color:black;" onclick="makePosting();"><b style="color:yellow; /* #0769d7 #FCDC3B */">Vent</b></button>
+							<div style='float:right; margin-right:5px; margin-top:5px;'>
+								<a href="javascript:changePostExtra(0);" style="margin-left:10px;" class="icon-pic-up" rel="tooltip" title="Photo" data-placement="top" data-trigger="hover"><i class="icon-picture"></i></a>
+								<!--<a href="javascript:changePostExtra(2);" style="margin-left:10px;" class="icon-film-up" rel="tooltip" title="Video" data-placement="top" data-trigger="hover"><i class="icon-film icon-film-up"></i></a>-->
+								<a href="javascript:changePostExtra(3);" style="margin-left:10px;" class="icon-link-up" rel="tooltip" title="Link" data-placement="top" data-trigger="hover"><i class="icon-share"></i></a>
+							</div>
+							<!--<div>
+								<div style='position:relative; bottom:0px;'><label style='font-size:13px; color:black;'><input type='radio' name='sportsCat' style='position:relative; bottom:4px;' /> Football</label></div>
+								<div style='position:relative; bottom:5px;'><label style='font-size:13px; color:black;'><input type='radio' name='sportsCat' style='position:relative; bottom:4px;' /> Cricket</label></div>
+								<div style='position:relative; bottom:10px;'><label style='font-size:13px; color:black;'><input type='radio' name='sportsCat' style='position:relative; bottom:4px;' /> Bowling</label></div>
+							</div>-->
+							<!--<img src="http://i.imm.io/1c2eL.png" width="16px;" height="16px;" onclick="repaintPostings();" style="cursor:pointer; margin-top:5px; margin-left:5px;" />-->
+							</td>
+						</tr>
+						<tr>
+							<td><a href="javascript:changePostExtra(-1);" style="float:right; display:none;" class="post-extra-remove"><i class="icon-remove"></i></a></td>
+						</tr>
+						<tr>
+							<td>
+								<div class="post-extra" style="display:none; background-color:yellow;">
+									<div class="photo" style="display:none;"></div>
+									<div class="video" style="display:none;"></div>
+									<div class="link" style="display:none;"></div>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<style type='text/css'>
+				.tab-holder{
+
+				}.tab-holder td{
+					padding:5px;
+					background-color:#179bff;
+					color:white;
+					-moz-border-top-right-radius:5px;
+					-webkit-border-top-right-radius:5px;
+					border-top-right-radius:5px;
+					-moz-border-top-left-radius:5px;
+					-webkit-border-top-left-radius:5px;
+					border-top-left-radius:5px;
+					cursor:pointer;
+				}.tab-holder td:hover{
+					background-color:red;
+					color:white;
+					font-weight:bold;
+					-moz-border-top-right-radius:5px;
+					-webkit-border-top-right-radius:5px;
+					border-top-right-radius:5px;
+					-moz-border-top-left-radius:5px;
+					-webkit-border-top-left-radius:5px;
+					border-top-left-radius:5px;
+					cursor:pointer;
+				}
+				.media-type-tab{
+					background-color:#173aff;
+					-moz-border-top-right-radius:5px;
+					-webkit-border-top-right-radius:5px;
+					border-top-right-radius:5px;
+					-moz-border-top-left-radius:5px;
+					-webkit-border-top-left-radius:5px;
+					border-top-left-radius:5px;
+					padding:5px;
+					width:100px;
+				}.media-type-viewer{
+					position:absolute;
+					width:100px;
+					z-index:1000;
+					padding:5px;
+					background-color:#173aff;
+					-moz-border-bottom-left-radius:5px;
+					-webkit-border-bottom-left-radius:5px;
+					border-bottom-left-radius:5px;
+					-moz-border-bottom-right-radius:5px;
+					-webkit-border-bottom-right-radius:5px;
+					border-bottom-right-radius:5px;
+				}
+				</style>
+				<table width='100%' cellpadding='0' cellspacing='0' style='border-bottom:1px solid black;'>
+					<tr>
+						<td width="40px" align="center">
+							<img src="http://i.imm.io/1c2eL.png" width="16px;" height="16px;" onclick="repaintPostings();" style="cursor:pointer; margin-top:5px; margin-left:5px;" />
+						</td>
+						<td>
+							<table width='100%' class='tab-holder' border='0'>
+								<tr>
+									<td align='center' onclick='changePType(1);'><img src='http://i.imm.io/1dkAY.png' width='20px;' height='20px;' /></td>
+									<td align='center' onclick='getLikePeople();'><img src='http://i.imm.io/1dkAN.png' width='20px;' height='20px;' /></td>
+									<td align='center' onclick='changePType(2);'><img src='http://i.imm.io/1dkzn.png' width='20px;' height='20px;' /></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<style type='text/css'>
+			.feed-area{
+				padding:5px;
+				margin:5px;
+				/*border:1px dashed grey;
+				border-radius:5px;
+				-moz-radius:5px;
+				-webkit-radius:5px;*/
+				border-top:1px solid white;
+				border-bottom:1px solid white;
+				text-align:center;
+			}.feed-area p{
+				color:white;
+				margin-top:10px;
+				font-size:16px;
+			}
+			</style>
+			<div class="feed-area">
+				<div class='feed-load-ind'>
+					<center>
+					<table border='0'>
+						<tr>
+							<td><img src='/data/img/load.gif' /></td>
+							<td><p>Loading</p></td>
+						</tr>
+					</table>
+					</center>
+				</div>
+            </div>
+		</td>
+		<td style="padding:0px; min-width:500px; border-right:1px solid white; background-color:white;" width="50%;" valign="top">
+			<table border="0" width="100%;" height="100%;" cellspacing="0" cellpadding="0">
+				<tr>
+					<td height="400px;">
+						<div class="img-cont" style="width:100%;" onclick='pause()'>
+							<img class="init-image fix-w-img" src="http://www.dynamictherapies.com/images/Cleardot.GIF" />
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td valign="top">
+						<a class="scroll-area" href=""></a>
+						<?php
+						if($userInfo['type'] == 0){  //standard
+							//$color = "#156ed4";
+							$color = "#179bff";
+							echo "<style type='text/css'>
+							.tab-area a{
+								text-decoration:none;
+								color:yellow;
+							}.tab-area a:hover{
+								background-color:red;
+								color:black !imporatant;
+							}
+							</style>";
+						}else if($userInfo['type'] == 3){ //musician
+							$color = "#156ed4";
+							echo "<style type='text/css'>
+							.tab-area a{
+								text-decoration:none;
+								color:yellow;
+							}
+							</style>";
+						}else if($userInfo['type'] == 2){ //team
+							$color = "#156ed4";
+							echo "<style type='text/css'>
+							.tab-area a{
+								text-decoration:none;
+								color:yellow;
+							}
+							</style>";
+						}else if($userInfo['type'] == 5){ //agent
+							$color = "#fc5a1e";
+							echo "<style type='text/css'>
+							.tab-area a{
+								text-decoration:none;
+								color:black;
+							}
+							</style>";
+						}else if($userInfo['type'] == 1){ //athlete
+							$color = "#156ed4";
+							echo "<style type='text/css'>
+							.tab-area a{
+								text-decoration:none;
+								color:yellow;
+							}
+							</style>";
+						}else if($userInfo['type'] == 4){ //band
+							$color = "#156ed4";
+							echo "<style type='text/css'>
+							.tab-area a{
+								text-decoration:none;
+								color:yellow;
+							}
+							</style>";
+						}
+						?>
+						<div style="overflow:hidden; margin-top:-2px;">
+						<div class="tab-scroll" style="padding:0px; background-color:<?php echo $color; ?>; display:none; padding-top:5px; position:relative;">
+							<table border="0" width="100%" class="tab-area" valign="top" style='padding:0px;' cellspacing="0" cellpadding="0">
+								<tr>
+									<?php
+									$tabContent = $u->tabContent($userInfo['type']);
+
+									foreach($tabContent as $num=>$item){
+										echo "<td align='center'>
+											<a href=\"javascript:loadTab('".$item['tab_script']."');\">";
+												echo "<div class='tab' style='color:white;'";
+												if($num == 0){ echo "style='padding-left:11px;'"; }
+												echo ">";
+												//echo "<div class='tab'>";
+												if($item['title'] == "Chat Zone"){
+													echo $item['title']."<span class='badge badge-important chat-badge' style='background-color:red; color:white; font-size:12px; position:relative; bottom:2px; left:3px; display:none;'>!</span>";
+												}else{
+													echo $item['title'];
+												}
+												echo "</div>";
+											echo "</a>
+										</td>";
+									}
+									?>
+								</tr>
+							</table>
+						</div>
+						</div>
+
+						<script type='text/javascript'>
+
+						</script>
+						<div class="fact-content">
+							<span class="loading-area-top" style="margin-left:50%;">Loading...</span>
+							<div class="content-area"></div>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</td>
+		<td style="color:white; background-color:black;" valign="top">
+			<table border="0" cellpadding="3" width="250px;" cellspacing="0" cellpadding="0">
 				<tr>
 					<?php
 						if($u_id != $_SESSION['user_id']){
-							echo '<td><button class="btn btn-mini btncustom22 support-yes" type="button" onclick="support();" style="background-color:#fc5a1e;" ><i class="icon-plus" style="position:relative; bottom:2px;"></i> Support</button>';
+							echo '<td><button class="btn btn-mini btn-primary support-yes" type="button" onclick="support();" ><i class="icon-plus icon-white" style="position:relative; bottom:2px;"></i><span style="color:yellow;">Support</span></button>';
 						}else{
 							echo '<td>';
 						}
 					?>
 					</td>
-					<td>
+					<!--<td>
 						<table border="0" style="margin-left:8px;" cellpadding="3" width="100%">
 							<tr align="center">
 								<td style="font-size:13px; color:white;">Fans</td>
@@ -1110,37 +1638,37 @@ var logId = <?php echo $_SESSION['user_id'].";"; ?>
 								<td><a href="#myModal1" role="button" data-toggle="modal"><span style="color:red; font-weight:bold; /* #fa5c23 #FCDC3B */"><?php echo $u->getFansNumeric($u_id); ?></span></a></td>
 								<td><a href="#myModal2" role="button" data-toggle="modal"><span style="color:red; font-weight:bold; /* #FCDC3B */"><?php echo $u->getSupportersNumeric($u_id); ?></span></a></td>
 							</tr>
-							<!-- STORE MODALS BELOW -->
+
 							<div id="myModal1" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-							  <div class="modal-header" style="background-color:#0769d7;">
+							  <div class="modal-header" style="background-color:#173aff;">
 								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 								<h3 id="myModalLabel" style="color:yellow;">Fans</h3>
 							  </div>
-							  <div class="modal-body" style="background-color:#0769d7;">
+							  <div class="modal-body" style="background-color:#173aff;">
 								<div style="width:100%;" class="user-fans"></div>
 							  </div>
-							  <div class="modal-footer" style="background-color:#0769d7;">
+							  <div class="modal-footer" style="background-color:#173aff;">
 								<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true" style="color:yellow;">Close</button>
 							  </div>
 							</div>
 							<div id="myModal2" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-							  <div class="modal-header" style="background-color:#0769d7;">
+							  <div class="modal-header" style="background-color:#173aff;">
 								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-								<h3 id="myModalLabel" style="color:yellow;">Supporting</h3>
+								<h3 id="myModalLabel" style="color:white;">Supporting</h3>
 							  </div>
-							  <div class="modal-body" style='background-color:#0769d7;'>
+							  <div class="modal-body" style='background-color:#173aff;'>
 								<div style="width:100%;" class="user-supporters"></div>
 							  </div>
-							  <div class="modal-footer" style="background-color:#0769d7;">
+							  <div class="modal-footer" style="background-color:#173aff;">
 								<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true" style="color:yellow;">Close</button>
 							  </div>
 							</div>
-							<!-- MODAL STORAGE AREA -->
+
 						</table>
-					</td>
+					</td>-->
 				</tr>
 				<tr align="right" style="border-top:1px solid white; border-bottom:1px solid white;">
-					<td colspan="2" align="center">
+					<!--<td colspan="2" align="center">
 					<?php
 					$text_type = "";
 					$imgpath = "";
@@ -1172,8 +1700,8 @@ var logId = <?php echo $_SESSION['user_id'].";"; ?>
 					}
 					echo '<img class="user_type" rel="tooltip" title="'.$text_type.'" data-placement="left" data-trigger="hover" src="'.$imgpath.'" width="16" height="16" style="float:right;"/>';
 					?>
-					<!-- FNAME COLOR -->
-					<b style="position:relative; left:5px; color:#ffff33;"><?php
+
+					<b style="position:relative; left:5px; color:yellow;"><?php
 						switch(convertIntTypeToString($userInfo['type'])){
 							case "general_user":
 							case "athelete_user":
@@ -1188,14 +1716,47 @@ var logId = <?php echo $_SESSION['user_id'].";"; ?>
 								echo $userInfo['bname'];
 								break;
 						}
-					?></b></td>
+					?></b></td>-->
 				</tr>
 				<tr>
 					<td colspan="2" valign="top" align="center">
 					<style type="text/css">
+						.selected-item{
+							padding:10px;
+							border:1px dashed black;
+							-webkit-border-radius:5px;
+							-moz-border-radius:5px;
+							boder-radius:5px;
+							margin-bottom:5px;
+						}.lineup-list li{
+							padding:2px 0px 2px 0px;
+							color:white;
+						}.lineup-list{
+							list-style:none;
+						}
+						.qq-upload-list {
+							text-align: left;
+							margin-left:0px;
+						}.qq-upload-list li{
+							color:black;
+						}
+						li.alert-success {
+							background-color: #DFF0D8;
+						}
+						li.alert-error {
+							background-color: #F2DEDE;
+						}
+						.alert-error .qq-upload-failed-text {
+							display: inline;
+						}.qq-uploader{
+							font-size:13px;
+							color:black;
+						}.qq-uploader a{
+							color:blue;
+						}
 					</style>
 					<script>
-					setInterval(blink, 710);
+					//setInterval(blink, 710);
 					function blink() {
 						var elm = $(".donate-btn"),
 						mycolor = elm.css('color');
@@ -1210,7 +1771,7 @@ var logId = <?php echo $_SESSION['user_id'].";"; ?>
 							case "athelete_user":
 							case "musician_user":
 							case "agent_user":
-								echo '<img src="/usr_content/pics/'.$userInfo['profile_pic'].'_t.jpg" width="120" height="120" style="margin-right:5px; margin-top:15px; margin-bottom:10px; cursor:pointer;" class="img-circle" onclick="launchModal(0,\''.$userInfo['profile_pic'].'\');" />';
+								echo '<!--<img src="/usr_content/pics/'.$userInfo['profile_pic'].'_t.jpg" width="150" height="150" style="margin-right:5px; margin-top:15px; margin-bottom:10px; cursor:pointer;" class="img-circle" onclick="launchModal(0,\''.$userInfo['profile_pic'].'\');" />-->';
 								break;
 							case "team_user":
 								//echo '<div class="img-container">';
@@ -1228,20 +1789,20 @@ var logId = <?php echo $_SESSION['user_id'].";"; ?>
 					?>
 					</td>
 				</tr>
-				<tr style="border-bottom:1px solid yellow;">
+				<tr>
 					<td colspan="2">
 						<table border="0" width="100%">
 							<tr>
-								<td style='padding-left:5px; padding-right:5px;'>
-									<div class="def-status" style="font-size:15px; overflow:hidden; width:250px;"><i style="color:#ffff27;"><?php echo $userInfo['status']; ?></i></div>
+								<!--<td style='padding-left:5px; padding-right:5px;'>
+									<div class="def-status" style="font-size:15px; overflow:hidden; width:250px;"><i style="color:white;"><?php echo $userInfo['status']; ?></i></div>
 									<div class="edit-status" style="font-size:15px; display:none;">
 										<textarea style="width:100%; resize:none;" placeholder="Status update..." class="status-enter"></textarea>
 									</div>
-								</td>
+								</td>-->
 							</tr>
 							<tr align="right">
 								<td style='padding-left:5px; padding-right:5px;'>
-									<?php if($_SESSION['user_id'] == $u_id){ echo '<a class="status-1" href="#" style="font-size:12px; color:white;" onclick="status()">Update status</a>'; } ?>
+									<?php if($_SESSION['user_id'] == $u_id){ echo '<a class="status-1" href="#" style="font-size:12px; color:yellow;" onclick="status()">Update status</a>'; } ?>
 									<a class="status-cancel" href="#" style="font-size:13px; display:none;" onclick="statusCancel()">Cancel</a>
 									<button class="btn btn-warning btn-small status-save" style="display:none;" onclick="statusSubmit()">Save</button>
 								</td>
@@ -1253,21 +1814,21 @@ var logId = <?php echo $_SESSION['user_id'].";"; ?>
 			<?php
 			if($userInfo['type'] != 2){
 			echo "
-			<div class='lineup'>
+			<div class='lineup' style='padding-top:10px; margin-top:-10px;'>
 				<table border='0' width='100%;'>
 					<tr>
-						<th colspan='3'><div style='color:#ffff00;'>".$userInfo['fname'].$userInfo['bname'].$userInfo['tname']."'s Lineup</div></th>
+						<th colspan='3'><div style='color:white;'>".$userInfo['fname'].$userInfo['bname'].$userInfo['tname']."'s Lineup</div></th>
 					</tr>
 					<tr>
 						<td colspan='3'>
-							<div class='lineup-enter' style='display:none;'>
+							<div class='lineup-enter' style='display:none; background-color:black;'>
 								<table border='0' width='100%;'>
 									<tr>
 										<td valign='top'>
-											<input type='text' class='fav-text' style='height:23px;' placeholder='Add a favorite...' />
+											<input type='text' class='fav-text' style='height:25px; border:1px solid black;' placeholder='Add a favorite...' />
 										</td>
 										<td valign='top'>
-											<button class='btn btn-mini btncustom' onclick='javascript:addLineup();'><span style='color:#2727ff; font-weight:bold;'>Add</span></button>
+											<button class='btn btn-mini btncustomwhite' style='margin-top:1px; background-color:white;' onclick='javascript:addLineup();'><span style='color:#2727ff;'>Add</span></button>
 										</td>
 									</tr>
 								</table>
@@ -1275,13 +1836,13 @@ var logId = <?php echo $_SESSION['user_id'].";"; ?>
 						</td>
 					</tr>
 					<tr>
-						<td colspan='3' align='center'><button class='btn btn-small btncustom shufflebtn' onclick='randomFonts();' style='color:#2727ff; background-color:#ffff00; font-weight:bold;'><i class='icon-refresh'></i>Shuffle</button></td>
+						<td colspan='3' align='center' style='padding-bottom:15px;'><button class='btn btn-small btncustomwhite shufflebtn' onclick='randomFonts();' style='color:#2727ff; background-color:white;'><i class='icon-refresh'></i>Shuffle</button></td>
 					</tr>
-					<tr>
-						<td></td>
-						<td></td>
-						<td></td>
-					</tr>
+					<!--<tr>
+						<td colspan='3'>
+							<img src='http://54.243.129.126/usr_content/pics/50ff4359c6ec3_w.jpg' />
+						</td>
+					</tr>-->
 					<tr>
 						<td colspan='3'>
 							<ul class='lineup-list'></ul>
@@ -1333,193 +1894,113 @@ var logId = <?php echo $_SESSION['user_id'].";"; ?>
 			}
 			?>
 		</td>
-		<td style="padding:0px; min-width:500px;" width="50%;" valign="top">
-			<table border="0" width="100%;" height="100%;">
-				<tr>
-					<td height="400px;">
-						<div class="img-cont" style="width:100%;" onclick='pause()'>
-							<img class="init-image fix-w-img" src="" />
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td valign="top">
-						<a class="scroll-area" href=""></a>
-						<?php
-						if($userInfo['type'] == 0){  //standard
-							//$color = "#156ed4";
-							$color = "#173aff";
-							echo "<style type='text/css'>
-							.tab-area a{
-								text-decoration:none;
-								color:white;
-							}
-							</style>";
-						}else if($userInfo['type'] == 3){ //musician
-							$color = "#156ed4";
-							echo "<style type='text/css'>
-							.tab-area a{
-								text-decoration:none;
-								color:yellow;
-							}
-							</style>";
-						}else if($userInfo['type'] == 2){ //team
-							$color = "#156ed4";
-							echo "<style type='text/css'>
-							.tab-area a{
-								text-decoration:none;
-								color:yellow;
-							}
-							</style>";
-						}else if($userInfo['type'] == 5){ //agent
-							$color = "#fc5a1e";
-							echo "<style type='text/css'>
-							.tab-area a{
-								text-decoration:none;
-								color:black;
-							}
-							</style>";
-						}else if($userInfo['type'] == 1){ //athlete
-							$color = "#156ed4";
-							echo "<style type='text/css'>
-							.tab-area a{
-								text-decoration:none;
-								color:yellow;
-							}
-							</style>";
-						}else if($userInfo['type'] == 4){ //band
-							$color = "#156ed4";
-							echo "<style type='text/css'>
-							.tab-area a{
-								text-decoration:none;
-								color:yellow;
-							}
-							</style>";
-						}
-						?>
-						<div style="overflow:hidden; margin-top:-2px;">
-						<div class="tab-scroll" style="padding:0px; background-color:<?php echo $color; ?>; display:none; padding-top:5px; position:relative;">
-							<table border="0" width="100%" class="tab-area" valign="top" style='padding:0px;'>
-								<tr>
-									<?php
-									$tabContent = $u->tabContent($userInfo['type']);
-
-									foreach($tabContent as $num=>$item){
-										echo "<td align='center'>
-											<a href=\"javascript:loadTab('".$item['tab_script']."');\">";
-												echo "<div class='tab' ";
-												if($num == 0){ echo "style='padding-left:11px;'"; }
-												echo ">";
-												//echo "<div class='tab'>";
-												if($item['title'] == "Chat Zone"){
-													echo $item['title']."<span class='badge badge-important chat-badge' style='background-color:red; color:white; font-size:12px; position:relative; bottom:2px; left:3px; display:none;'>!</span>";
-												}else{
-													echo $item['title'];
-												}
-												echo "</div>";
-											echo "</a>
-										</td>";
-									}
-									?>
-								</tr>
-							</table>
-						</div>
-						</div>
-
-						<script type='text/javascript'>
-
-						</script>
-						<div class="fact-content">
-							<span class="loading-area-top" style="margin-left:50%;">Loading...</span>
-							<div class="content-area"></div>
-						</div>
-					</td>
-				</tr>
-			</table>
-		</td>
-		<script>
-
-		var pageId = 1;
-		var pageMAX = 0;
-
-		//page_id passed for the next infinite page passed.
-		function loadMoreContent(){
-			if(pageId < pageMAX){
-				repaintPostings(++pageId);
-			}else{
-				$(".ldmore").html("No more content");
-			}
-		}
-		</script>
-		<td width="35%;" valign="top" class="feed"><!-- #fc5a1e -->
-			<div class="post-input" style="/*background:#173aff;*/ background-image:url('http://i44.tinypic.com/35ir4g7.png'); position:relative; padding-top:5px; padding-right:5px; padding-bottom:10px; padding-left:5px;">
-				<table border="0" width="100%">
-					<tr>
-						<td><textarea style="width:100%;" placeholder="Express yourself..." class="post-textbox"></textarea></td>
-					</tr>
-					<tr>
-						<td>
-						<!--<button class="btn btn-primary btn-primary" style="float:right;" onclick="makePosting();"><b style="color:yellow; /* #0769d7 #FCDC3B */">Vent</b></button>-->
-						<button class="btn btn-primary btncustom" style="float:right; background-color:#ffff1a;" onclick="makePosting();"><b style="color:#173aff; /* #0769d7 #FCDC3B */">Vent</b></button>
-						<div style='float:right; margin-right:5px; margin-top:5px;'>
-							<a href="javascript:changePostExtra(0);" style="margin-left:10px;" class="icon-pic-up" rel="tooltip" title="Photo" data-placement="top" data-trigger="hover"><i class="icon-picture icon-white"></i></a>
-							<a href="javascript:changePostExtra(2);" style="margin-left:10px;" class="icon-film-up" rel="tooltip" title="Video" data-placement="top" data-trigger="hover"><i class="icon-film icon-white icon-film-up"></i></a>
-							<a href="javascript:changePostExtra(3);" style="margin-left:10px;" class="icon-link-up" rel="tooltip" title="Link" data-placement="top" data-trigger="hover"><i class="icon-share icon-white"></i></a>
-						</div>
-						<span style="float:left; margin-left:10px; font-size:13px; color:white; display:none;" class="selected-item">Item selected</span>
-						<img src="/data/img/yellow_refresh.png" width="16px;" height="16px;" onclick="repaintPostings();" style="cursor:pointer; margin-top:5px; margin-left:5px;" />
-						</td>
-					</tr>
-					<tr>
-						<td><a href="javascript:changePostExtra(-1);" style="float:right; display:none;" class="post-extra-remove"><i class="icon-remove icon-white"></i></a></td>
-					</tr>
-					<tr>
-						<td>
-							<div class="post-extra" style="display:none; background-color:yellow;">
-								<div class="photo" style="display:none;"></div>
-								<div class="video" style="display:none;"></div>
-								<div class="link" style="display:none;"></div>
-							</div>
-						</td>
-					</tr>
-				</table>
-			</div>
-			<style type='text/css'>
-			.feed-area{
-				padding:5px;
-				margin:5px;
-				/*border:1px dashed grey;
-				border-radius:5px;
-				-moz-radius:5px;
-				-webkit-radius:5px;*/
-				border-top:1px solid white;
-				border-bottom:1px solid white;
-				text-align:center;
-			}.feed-area p{
-				color:white;
-				margin-top:10px;
-				font-size:16px;
-			}
-			</style>
-			<div class="feed-area">
-				<!--<div class='feed-load-ind'>
-					<img src='/data/img/load.gif' /><p>Loading</p>
-				</div>-->
-				<div class='feed-load-ind'>
-					<center>
-					<table border='0'>
-						<tr>
-							<td><img src='/data/img/load.gif' /></td>
-							<td><p>Loading</p></td>
-						</tr>
-					</table>
-					</center>
-				</div>
-            </div>
-            <!--<div class='load-more ldmore'>Loading...</div>-->
-		</td>
 	</tr>
 </table>
+
+<script>
+
+var pageId = 1;
+var pageMAX = 0;
+
+//page_id passed for the next infinite page passed.
+function loadMoreContent(){
+	if(pageId < pageMAX){
+		repaintPostings(++pageId);
+	}else{
+		$(".ldmore").html("No more content");
+	}
+}
+
+function grabPreferences(type){
+	var returnArray = [];
+	$.ajax({
+		url: "actions.php?type=grabPreferences",
+		success: function(data){
+			var parseJSON = $.parseJSON(data);
+
+			for(var i = 0;i < parseJSON.data.length;i++){
+				if(parseJSON.data[i].type == type){  //sport or music
+					returnArray.push([parseJSON.data[i].id, parseJSON.data[i].type, parseJSON.data[i].item]);
+				}
+			}
+		}
+	});
+	return returnArray;
+}
+
+function pickCat(type){
+	switch(type){
+		case 0: //sports
+			var preferences = grabPreferences(0);
+			var cbxs = "<option value='-'>Select sport...</option>";
+
+			for(var i = 0;i < preferences.length;i++){
+				cbxs += "<option value='"+preferences[i][0]+"'>"+preferences[i][2]+"</option>";
+			}
+			cbxs += "<option value='-'>-----</option>";
+			$.ajax({
+				url: "actions.php?type=grabSports",
+				success: function(data){
+					var parseJSON = $.parseJSON(data);
+
+					for(var i = 0;i < parseJSON.data.length;i++){
+						var yep = true;
+						for(var j = 0;j < preferences.length;j++){
+							if(parseJSON.data[i].id == preferences[j][0]){
+								yep = false;
+							}
+						}
+						if(yep){
+							cbxs += "<option value='"+parseJSON.data[i].id+"'>"+parseJSON.data[i].sport+"</option>";
+						}
+					}
+				}
+			});
+
+			$(".pick-cat").html("<select width='100px' class='sport-sel'>"+cbxs+"</select><br /><a href='javascript:void(0);' onclick='pickCat(2);' style='font-size:13px; color:blue;'>&laquo; Back</a>");
+			/*$(".sport-sel").change(function(){
+				makePostingCats();
+			});*/
+			break;
+		case 1:	//music
+			var preferences = grabPreferences(1);
+			var cbxs = "<option value='-'>Select genre...</option>";
+
+			for(var i = 0;i < preferences.length;i++){
+				cbxs += "<option value='"+preferences[i][0]+"'>"+preferences[i][2]+"</option>";
+			}
+			cbxs += "<option value='-'>-----</option>";
+			$.ajax({
+				url: "actions.php?type=grabGenres",
+				success: function(data){
+					var parseJSON = $.parseJSON(data);
+
+					for(var i = 0;i < parseJSON.data.length;i++){
+						var yep = true;
+						for(var j = 0;j < preferences.length;j++){
+							if(parseJSON.data[i].id == preferences[j][0]){
+								yep = false;
+							}
+						}
+						if(yep){
+							cbxs += "<option value='"+parseJSON.data[i].id+"'>"+parseJSON.data[i].genre+"</option>";
+						}
+					}
+				}
+			});
+
+			$(".pick-cat").html("<select width='100px' class='genre-sel'>"+cbxs+"</select><br /><a href='javascript:void(0);' onclick='pickCat(2);' style='font-size:13px; color:blue;'>&laquo; Back</a>");
+			/*$(".genre-sel").change(function(){
+				makePostingCats();
+			});*/
+			break;
+		case 2: //orgin
+			$(".pick-cat").html("<span style='color:black; font-size:13px;'>What is this posting about?</span><br />\
+						<a style='color:blue; font-size:13px;' onclick='makePostingCats(1);' href='#'><img src='http://i.imm.io/1dbuU.png' width='20px;' height='20px;' />Sports &raquo;</a> <a style='color:blue; font-size:13px;' onclick='makePostingCats(2);' href='#'><img src='http://i.imm.io/1dbvx.png' width='20px;' height='20px;' />Music &raquo;</a>");
+			break;
+	}
+}
+</script>
 
 <!-- Modal -->
 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="height:80%; width:93%; margin-left:-47%;">
@@ -1527,13 +2008,13 @@ var logId = <?php echo $_SESSION['user_id'].";"; ?>
     	<tr>
     		<td style="background-color:black;" align="center" valign="center">
     		<div class="imgvid-content" style='width:100%; height:100%;'></div>
-    		<img class="modal-img" style="display:none;" src="" style="height:100%;" img-id=""/>
+    		<img class="modal-img" style="display:none;" src="http://www.dynamictherapies.com/images/Cleardot.GIF" style="height:100%;" img-id=""/>
     		</td>
     		<td align="right" valign="top" width="300px;" style='background-color:yellow;'><button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="removeModal()">×</button>
     			<div class="resource-content" style="color:black;">
     			<table border="0" style="margin:10px;" width="100%">
     				<tr>
-    					<td rowspan="2" align="right" valign="top" width="50px;"><img class="profile-pic img-rounded" src="" width="30px;" height="30px;" style="margin-right:5px;"/></td>
+    					<td rowspan="2" align="right" valign="top" width="50px;"><img class="profile-pic img-rounded" src="http://www.dynamictherapies.com/images/Cleardot.GIF" width="30px;" height="30px;" style="margin-right:5px;"/></td>
     					<td class="manage-btn-edit" style="display:none;">
     						<div class="btn-group" style="float:right;">
 							  <button class="btn btn-small btn-primary"><span style="color:yellow;">Manage</span></button>

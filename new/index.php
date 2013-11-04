@@ -25,12 +25,14 @@
 		<script type="text/javascript" src="models/spuzik_mz.js"></script>
 		<script type="text/javascript" src="models/spuzik_link.js"></script>
 		<script type="text/javascript" src="models/spuzik_image.js"></script>
+		<script type="text/javascript" src="models/spuzik_jukebox.js"></script>
 		<script type="text/javascript" src="views/spuzik_index.js"></script>
 		<script type="text/javascript" src="views/spuzik_profile.js"></script>
 		<script type="text/javascript" src="views/spuzik_header.js"></script>
 		<script type="text/javascript" src="views/spuzik_lineup.js"></script>
 		<script type="text/javascript" src="views/spuzik_top.js"></script>
 		<script type="text/javascript" src="views/spuzik_tab.js"></script>
+		<script type="text/javascript" src="views/spuzik_jukebox.js"></script>
 		<script type="text/javascript" src="spuzik_router.js"></script>
 
 	</head>
@@ -157,6 +159,29 @@
 					</tr>
 				</table>
 			</div>
+		</script>
+
+		<script id="jukeboxItem" type="text/template">
+			<td><%= Title %> - <span class="artist"><%= Artist %></span></td>
+			<td><span class="duration"><%= Length %></span></td>
+			<td><%= Genre %></td>
+			<td>
+				<table border="0" cellpadding="0" cellspacing="0">
+					<tr>
+						<td><span class="glyphicon glyphicon-chevron-left song-actions"></span></td>
+						<td>
+							<div class="song-actions-view">
+								<table border="0">
+									<tr>
+										<td><span class="glyphicon glyphicon-user"></span></td>
+										<td><span class="glyphicon glyphicon-trash"></span></td>
+									</tr>
+								</table>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</td>
 		</script>
 
 		<script id="loginTemplate" type="text/template">
@@ -586,12 +611,38 @@
 			</table>
 		</script>
 
+		<script id="tabPhotoPopup" type="text/template">
+			<div id="img-popup">
+				Description and a photo.
+			</div>
+		</script>
+
 		<script id="tabMediaThumb" type="text/template">
 			<img src="https://s3-us-west-1.amazonaws.com/spuzik/t/<%= ImageId %>.<%= Extension %>" />
 		</script>
 
+		<script id="tabProspectJukeboxIndv" type="text/template">
+			<td><span class="glyphicon glyphicon-plus add-tune"></span></td><td><%= Title %> - <span class="artist"><%= Artist %></span></td><td><%= Album %></td>
+		</script>
+
 		<script id="tabMyTunesTemplate" type="text/template">
-			<h2>My Tunes Area</h2>
+			<!--<input type="text" class="form-control music-search" placeholder="Search..." style="width:200px;" /><button type="button" class="btn btn-small btn-warning">Search</button>-->
+			<div class="music-search">
+				<table border="0" cellpadding="0" cellspacing="0">
+					<tr>
+						<td><input type="text" class="form-control music-search" placeholder="Search for music..." style="width:200px;" /></td>
+						<td><button type="button" class="btn btn-small btn-warning">Search</button></td>
+					</tr>
+				</table>
+				<div class="search-results">
+					<table border="1"></table>
+				</div>
+			</div>
+			<div class="music-tabs">
+			</div>
+			<div class="music-list">
+				<table border="0" cellpadding="5" cellspacing="0" width="100%;"></table>
+			</div>
 		</script>
 
 		<script id="tabLinkTemplate" type="text/template">
